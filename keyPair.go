@@ -17,8 +17,8 @@ func NewRandomKeyPair() (*KeyPair, error) {
 	}
 
 	return &KeyPair{
-		PublicKey:  pub,
-		PrivateKey: privateKey,
+		PublicKey:  PublicKey(pub),
+		PrivateKey: PrivateKey(privateKey),
 	}, nil
 }
 
@@ -29,7 +29,7 @@ func MustNewRandomKeypair() *KeyPair {
 	}
 
 	return &KeyPair{
-		PublicKey:  pub,
-		PrivateKey: privateKey,
+		PublicKey:  PublicKey(pub),
+		PrivateKey: PrivateKey(privateKey),
 	}
 }

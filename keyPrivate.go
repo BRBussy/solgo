@@ -1,5 +1,7 @@
 package solana
 
-import "crypto"
+import (
+	"crypto/ed25519"
+)
 
-type PrivateKey crypto.PrivateKey
+type PrivateKey ed25519.PrivateKey
