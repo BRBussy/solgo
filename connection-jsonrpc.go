@@ -55,6 +55,7 @@ type JSONRPCConnection struct {
 //
 // The default returned JSONRPCConnection is configured with:
 //  - network: MainnetBeta
+//  - endpoint: https://api.mainnet-beta.solana.com
 //  - commitmentLevel: ConfirmedCommitmentLevel
 //
 // The passed opts are used to override these default values and configure the
