@@ -222,6 +222,9 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 						}, nil
 					},
 				},
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: MaxCommitmentLevel,
+				},
 			},
 			args: args{
 				ctx: context.Background(),
@@ -244,7 +247,9 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 						}, nil
 					},
 				},
-				config: nil,
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: MaxCommitmentLevel,
+				},
 			},
 			args: args{
 				ctx: context.Background(),
