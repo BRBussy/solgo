@@ -86,13 +86,18 @@ func (j *JSONRPCConnection) Commitment() CommitmentLevel {
 	return j.config.commitmentConfig.Commitment
 }
 
-type GetBalanceJSONRPCResponse struct {
-	Context Context `json:"context"`
-	Value   uint64  `json:"value"`
+type GetAccountInfoJSONRPCResponse struct {
+	Context Context     `json:"context"`
+	Value   AccountInfo `json:"value"`
 }
 
 func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccountInfoRequest) (*GetAccountInfoResponse, error) {
 	panic("implement me")
+}
+
+type GetBalanceJSONRPCResponse struct {
+	Context Context `json:"context"`
+	Value   uint64  `json:"value"`
 }
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {

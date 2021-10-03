@@ -280,3 +280,171 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 		})
 	}
 }
+
+func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
+	testKeyPair, err := NewRandomKeyPair()
+	require.Nil(t, err)
+
+	successfulResponse := GetAccountInfoResponse{
+		Context: Context{
+			Slot: 123412356234,
+		},
+		Value: 100,
+	}
+	successfulResponseJSONResult, err := json.Marshal(
+		GetAccountInfoJSONRPCResponse{
+			Context: successfulResponse.Context,
+			Value:   successfulResponse.Value,
+		},
+	)
+	require.Nil(t, err)
+
+	type fields struct {
+		jsonRPCClient *jsonrpc.MockClient
+		config        *jsonrpcConnectionConfig
+	}
+	type args struct {
+		ctx     context.Context
+		request GetAccountInfoRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *GetAccountInfoResponse
+		wantErr bool
+	}{
+		{
+			name: "error performing json rpc call - commitment config not provided",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						require.Equalf(
+							t,
+							[]interface{}{
+								testKeyPair.PublicKey.ToBase58(),
+								CommitmentConfig{
+									Commitment: MaxCommitmentLevel,
+								},
+							},
+							params,
+							"params not as expected",
+						)
+
+						return nil, errors.New("some err")
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentConfig: CommitmentConfig{
+						Commitment: MaxCommitmentLevel,
+					},
+				},
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetAccountInfoRequest{
+					PublicKey: testKeyPair.PublicKey,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "error set on rpc response - commitment config provided",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						require.Equalf(
+							t,
+							[]interface{}{
+								testKeyPair.PublicKey.ToBase58(),
+								CommitmentConfig{
+									Commitment: ProcessedCommitmentLevel,
+								},
+							},
+							params,
+							"params not as expected",
+						)
+
+						return &jsonrpc.RPCResponse{
+							Error: &jsonrpc.RPCError{Message: "bad things happened"},
+						}, nil
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentConfig: CommitmentConfig{
+						Commitment: MaxCommitmentLevel,
+					},
+				},
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetAccountInfoRequest{
+					PublicKey: testKeyPair.PublicKey,
+					CommitmentConfig: CommitmentConfig{
+						Commitment: ProcessedCommitmentLevel,
+					},
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "error parsing GetAccountInfoJSONRPCResponse",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: []byte("invalid data here"),
+							Error:  nil,
+						}, nil
+					},
+				},
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetAccountInfoRequest{
+					PublicKey:        testKeyPair.PublicKey,
+					CommitmentConfig: CommitmentConfig{Commitment: FinalizedCommitmentLevel},
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "success",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: successfulResponseJSONResult,
+							Error:  nil,
+						}, nil
+					},
+				},
+				config: nil,
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetAccountInfoRequest{
+					PublicKey:        testKeyPair.PublicKey,
+					CommitmentConfig: CommitmentConfig{Commitment: MaxCommitmentLevel},
+				},
+			},
+			want:    &successfulResponse,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.fields.jsonRPCClient.T = t
+			j := &JSONRPCConnection{
+				jsonRPCClient: tt.fields.jsonRPCClient,
+				config:        tt.fields.config,
+			}
+			got, err := j.GetAccountInfo(tt.args.ctx, tt.args.request)
+			require.Equalf(t, tt.wantErr, err != nil, "error is nil")
+			require.Equalf(t, tt.want, got, "got neq to want")
+		})
+	}
+}

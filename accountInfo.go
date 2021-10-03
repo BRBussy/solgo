@@ -1,25 +1,17 @@
 package solana
 
-// AccountInfo is information describing an account
-type AccountInfo struct {
-	// Executable is true if this account's Data contains a loaded program
-	Executable bool `json:"executable"`
-
-	// Lamports is the number of lamports assigned to this account
-	Lamports uint64 `json:"lamports"`
-
-	// Data is optional data assigned to the account
-	Data []byte `json:"data"`
-
-	// Owner is a base-58 encoded Pubkey of the program that owns this account
-	Owner string `json:"owner"`
-
-	// RentEpoch is the epoch at which this account will next owe rent
-	RentEpoch uint64 `json:"rent_epoch"`
-}
+import "encoding/json"
 
 // AccountEncoding specifies encoding for AccountInfo.Data
 type AccountEncoding string
+
+type EncodingConfig struct {
+	Encoding AccountEncoding `json:"encoding"`
+}
+
+func (e EncodingConfig) IsBlank() bool {
+	return e == EncodingConfig{}
+}
 
 var (
 	// Base58AccountEncoding encodes the AccountInfo.Data field in base58 (is slower!)
@@ -41,10 +33,54 @@ var (
 	JSONParsedEncoding AccountEncoding = "jsonParsed"
 )
 
-type EncodingConfig struct {
-	Encoding AccountEncoding `json:"encoding"`
+// AccountInfoEncodedAccountData is information describing an account
+// with data field encoded accorded to a prescribed AccountEncoding
+type AccountInfoEncodedAccountData struct {
+	// Executable is true if this account's Data contains a loaded program
+	Executable bool `json:"executable"`
+
+	// Lamports is the number of lamports assigned to this account
+	Lamports uint64 `json:"lamports"`
+
+	// Data is optional data assigned to the account
+	Data []string `json:"data"`
+
+	// Owner is a base-58 encoded Pubkey of the program that owns this account
+	Owner string `json:"owner"`
+
+	// RentEpoch is the epoch at which this account will next owe rent
+	RentEpoch uint64 `json:"rentEpoch"`
 }
 
-func (e EncodingConfig) IsBlank() bool {
-	return e == EncodingConfig{}
+func (e AccountInfoEncodedAccountData) GetEncoding() AccountEncoding {
+	if len(e.Data) != 2 {
+		return ""
+	}
+	return AccountEncoding(e.Data[1])
+}
+
+func (e AccountInfoEncodedAccountData) GetData() string {
+	if len(e.Data) != 2 {
+		return ""
+	}
+	return e.Data[0]
+}
+
+// AccountInfoJSONData is information describing an account
+// with data field encoded accorded to a prescribed JSONParsedEncoding
+type AccountInfoJSONData struct {
+	// Executable is true if this account's Data contains a loaded program
+	Executable bool `json:"executable"`
+
+	// Lamports is the number of lamports assigned to this account
+	Lamports uint64 `json:"lamports"`
+
+	// Data is optional data assigned to the account
+	Data map[string]map[string]json.RawMessage `json:"data"`
+
+	// Owner is a base-58 encoded Pubkey of the program that owns this account
+	Owner string `json:"owner"`
+
+	// RentEpoch is the epoch at which this account will next owe rent
+	RentEpoch uint64 `json:"rentEpoch"`
 }
