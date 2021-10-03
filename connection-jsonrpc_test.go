@@ -30,7 +30,7 @@ func TestNewJSONRPCConnection(t *testing.T) {
 			},
 		},
 		{
-			name: "withCommitmentLevel config",
+			name: "WithCommitmentLevel config",
 			args: args{
 				opts: []JSONRPCConnectionOption{
 					WithCommitmentLevel(MaxCommitmentLevel),
@@ -39,6 +39,33 @@ func TestNewJSONRPCConnection(t *testing.T) {
 			want: func() *JSONRPCConnection {
 				c := NewJSONRPCConnection()
 				c.config.commitmentLevel = MaxCommitmentLevel
+				return c
+			}(),
+		},
+		{
+			name: "WithNetwork config",
+			args: args{
+				opts: []JSONRPCConnectionOption{
+					WithNetwork(Testnet),
+				},
+			},
+			want: func() *JSONRPCConnection {
+				c := NewJSONRPCConnection()
+				c.config.network = Testnet
+				return c
+			}(),
+		},
+		{
+			name: "WithEndpoint config",
+			args: args{
+				opts: []JSONRPCConnectionOption{
+					WithEndpoint("https://someEndpoint.com"),
+				},
+			},
+			want: func() *JSONRPCConnection {
+				c := NewJSONRPCConnection()
+				c.config.endpoint = "https://someEndpoint.com"
+				c.jsonRPCClient = jsonrpc.NewHTTPClient("https://someEndpoint.com")
 				return c
 			}(),
 		},
