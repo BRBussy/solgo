@@ -6,6 +6,8 @@ func init() {
 	}
 }
 
+// SystemProgram is set on module initialisation and can be used to
+// construct SystemProgram instructions.
 var SystemProgram *systemProgram
 
 // SystemProgram is the api for the Solana system program.
