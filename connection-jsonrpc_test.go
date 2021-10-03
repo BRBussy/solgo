@@ -3,6 +3,7 @@ package solana
 import (
 	"context"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
+	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 )
@@ -16,13 +17,35 @@ func TestNewJSONRPCConnection(t *testing.T) {
 		args args
 		want *JSONRPCConnection
 	}{
-		// TODO: Add test cases.
+		{
+			name: "default config",
+			args: args{},
+			want: &JSONRPCConnection{
+				jsonRPCClient: jsonrpc.NewHTTPClient(MainnetBeta.MustToRPCURL()),
+				config: &jsonrpcConnectionConfig{
+					network:         MainnetBeta,
+					endpoint:        MainnetBeta.MustToRPCURL(),
+					commitmentLevel: ConfirmedCommitmentLevel,
+				},
+			},
+		},
+		{
+			name: "withCommitmentLevel config",
+			args: args{
+				opts: []JSONRPCConnectionOption{
+					WithCommitmentLevel(MaxCommitmentLevel),
+				},
+			},
+			want: func() *JSONRPCConnection {
+				c := NewJSONRPCConnection()
+				c.config.commitmentLevel = MaxCommitmentLevel
+				return c
+			}(),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewJSONRPCConnection(tt.args.opts...); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewJSONRPCConnection() = %v, want %v", got, tt.want)
-			}
+			require.Equal(t, tt.want, NewJSONRPCConnection(tt.args.opts...))
 		})
 	}
 }
