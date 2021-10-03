@@ -373,6 +373,16 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			},
 			want: &GetAccountInfoResponse{
 				Context: Context{Slot: 1},
+				AccountInfo: AccountInfoEncodedData{
+					Executable: false,
+					Lamports:   1000000000,
+					Data: []string{
+						"11116bv5nS2h3y12kD1yUKeMZvGcKLSjQgX6BeV7u1FrjeJcKfsHRTPuR3oZ1EioKtYGiYxpxMG5vpbZLsbcBYBEmZZcMKaSoGx9JZeAuWf",
+						"base58",
+					},
+					Owner:     "11111111111111111111111111111111",
+					RentEpoch: 2,
+				},
 			},
 			wantErr: false,
 		},
