@@ -6,8 +6,8 @@ import "context"
 
 // Connection represents a connection to a fullnode JSON RPC endpoint
 type Connection interface {
-	// Commitment returns the default commitment used for requests
-	Commitment(ctx context.Context) (Commitment, error)
+	// CommitmentLevel returns the default commitment used for requests
+	Commitment(ctx context.Context) (CommitmentLevel, error)
 
 	// GetBalance returns the balance of the account of provided PublicKey
 	GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error)
@@ -15,7 +15,7 @@ type Connection interface {
 
 type GetBalanceRequest struct {
 	PublicKey  PublicKey `validate:"required"`
-	Commitment Commitment
+	Commitment CommitmentLevel
 }
 
 type GetBalanceResponse struct {
