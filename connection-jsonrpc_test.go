@@ -141,7 +141,7 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 								testKeyPair.PublicKey.ToBase58(),
 								map[string]interface{}{
 									"commitment": ConfirmedCommitmentLevel,
-									"encoding":   Base64AccountEncoding,
+									"encoding":   Base64Encoding,
 								},
 							},
 							params,
@@ -249,7 +249,7 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 				ctx: nil,
 				request: GetAccountInfoRequest{
 					PublicKey: testKeyPair.PublicKey,
-					Encoding:  Base58AccountEncoding,
+					Encoding:  Base58Encoding,
 				},
 			},
 			want:    nil,
@@ -368,7 +368,7 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 				ctx: nil,
 				request: GetAccountInfoRequest{
 					PublicKey: testKeyPair.PublicKey,
-					Encoding:  Base58AccountEncoding,
+					Encoding:  Base58Encoding,
 				},
 			},
 			want: &GetAccountInfoResponse{

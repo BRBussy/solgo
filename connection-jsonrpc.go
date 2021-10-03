@@ -90,7 +90,7 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 	// prepare configuration object
 	config := map[string]interface{}{
 		"commitment": j.Commitment(),
-		"encoding":   Base64AccountEncoding,
+		"encoding":   Base64Encoding,
 	}
 
 	// set commitment level if provided
