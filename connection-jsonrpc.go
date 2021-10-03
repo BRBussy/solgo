@@ -4,12 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
-	"github.com/BRBussy/solgo/internal/pkg/validation"
 )
 
 // JSONRPCConnection is a json-rpc http implementation of the solana.Connection interface
 type JSONRPCConnection struct {
-	validator     validation.Validator
 	jsonRPCClient jsonrpc.Client
 	config        *jsonrpcConnectionConfig
 }
@@ -79,7 +77,6 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	}
 
 	return &JSONRPCConnection{
-		validator:     validation.MustNewGoPlaygroundValidator(),
 		jsonRPCClient: jsonrpc.NewHTTPClient(config.endpoint),
 		config:        config,
 	}
@@ -95,11 +92,6 @@ type GetBalanceJSONRPCResponse struct {
 }
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
-	// validate request
-	if err := j.validator.Validate(request); err != nil {
-		return nil, err
-	}
-
 	// perform rpc call
 	resp, err := j.jsonRPCClient.CallParamArray(
 		ctx,
