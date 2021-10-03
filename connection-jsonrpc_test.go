@@ -87,7 +87,15 @@ func TestJSONRPCConnection_Commitment(t *testing.T) {
 		fields fields
 		want   CommitmentLevel
 	}{
-		// TODO: Add test cases.
+		{
+			name: "basic test",
+			fields: fields{
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: MaxCommitmentLevel,
+				},
+			},
+			want: MaxCommitmentLevel,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -95,9 +103,7 @@ func TestJSONRPCConnection_Commitment(t *testing.T) {
 				jsonRPCClient: tt.fields.jsonRPCClient,
 				config:        tt.fields.config,
 			}
-			if got := j.Commitment(); got != tt.want {
-				t.Errorf("Commitment() = %v, want %v", got, tt.want)
-			}
+			require.Equal(t, tt.want, j.Commitment())
 		})
 	}
 }
@@ -134,83 +140,6 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetBalance() got = %v, want %v", got, tt.want)
 			}
-		})
-	}
-}
-
-func TestWithCommitmentLevel(t *testing.T) {
-	type args struct {
-		c CommitmentLevel
-	}
-	tests := []struct {
-		name string
-		args args
-		want JSONRPCConnectionOption
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := WithCommitmentLevel(tt.args.c); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("WithCommitmentLevel() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestWithEndpoint(t *testing.T) {
-	type args struct {
-		e string
-	}
-	tests := []struct {
-		name string
-		args args
-		want JSONRPCConnectionOption
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := WithEndpoint(tt.args.e); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("WithEndpoint() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestWithNetwork(t *testing.T) {
-	type args struct {
-		c Network
-	}
-	tests := []struct {
-		name string
-		args args
-		want JSONRPCConnectionOption
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := WithNetwork(tt.args.c); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("WithNetwork() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_jsonrpcConnectionOptionFunc_apply(t *testing.T) {
-	type args struct {
-		cfg *jsonrpcConnectionConfig
-	}
-	tests := []struct {
-		name string
-		fn   jsonrpcConnectionOptionFunc
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
 		})
 	}
 }
