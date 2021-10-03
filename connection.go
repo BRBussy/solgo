@@ -9,19 +9,16 @@ type Connection interface {
 	// Commitment returns the default commitment used for requests
 	Commitment(ctx context.Context) (Commitment, error)
 
-	GetBalance(
-		ctx context.Context,
-		publicKey PublicKey,
-	) (*GetBalanceAndContextResponse, error)
-
-	GetBalanceWithCommitment(
-		ctx context.Context,
-		publicKey PublicKey,
-		commitment Commitment,
-	) (*GetBalanceAndContextResponse, error)
+	// GetBalance returns the balance of the account of provided PublicKey
+	GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error)
 }
 
-type GetBalanceAndContextResponse struct {
+type GetBalanceRequest struct {
+	PublicKey  PublicKey `validate:"required"`
+	Commitment Commitment
+}
+
+type GetBalanceResponse struct {
 	Context Context
 	Balance uint64
 }
