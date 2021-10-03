@@ -15,8 +15,8 @@ type Connection interface {
 }
 
 type GetAccountInfoRequest struct {
-	PublicKey  PublicKey `validate:"required"`
-	Commitment CommitmentLevel
+	PublicKey        PublicKey `validate:"required"`
+	CommitmentConfig CommitmentConfig
 }
 
 type GetAccountInfoResponse struct {
@@ -24,8 +24,8 @@ type GetAccountInfoResponse struct {
 }
 
 type GetBalanceRequest struct {
-	PublicKey  PublicKey `validate:"required"`
-	Commitment CommitmentLevel
+	PublicKey        PublicKey `validate:"required"`
+	CommitmentConfig CommitmentConfig
 }
 
 type GetBalanceResponse struct {

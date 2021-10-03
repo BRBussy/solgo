@@ -14,9 +14,9 @@ type JSONRPCConnection struct {
 
 // jsonrpcConnectionConfig is the configuration for a JSONRPCConnection
 type jsonrpcConnectionConfig struct {
-	network         Network
-	endpoint        string
-	commitmentLevel CommitmentLevel
+	network          Network
+	endpoint         string
+	commitmentConfig CommitmentConfig
 }
 
 // JSONRPCConnectionOption makes a change to the jsonrpcConnectionConfig
@@ -30,10 +30,10 @@ func (fn jsonrpcConnectionOptionFunc) apply(cfg *jsonrpcConnectionConfig) {
 	fn(cfg)
 }
 
-// WithCommitmentLevel sets CommitmentLevel on the JSONRPCConnection
-func WithCommitmentLevel(c CommitmentLevel) JSONRPCConnectionOption {
+// WithCommitmentConfig sets CommitmentConfig on the JSONRPCConnection
+func WithCommitmentConfig(c CommitmentConfig) JSONRPCConnectionOption {
 	return jsonrpcConnectionOptionFunc(func(config *jsonrpcConnectionConfig) {
-		config.commitmentLevel = c
+		config.commitmentConfig = c
 	})
 }
 
@@ -66,9 +66,9 @@ func WithEndpoint(e string) JSONRPCConnectionOption {
 func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	// prepare default configuration
 	config := &jsonrpcConnectionConfig{
-		network:         MainnetBeta,
-		endpoint:        MainnetBeta.MustToRPCURL(),
-		commitmentLevel: ConfirmedCommitmentLevel,
+		network:          MainnetBeta,
+		endpoint:         MainnetBeta.MustToRPCURL(),
+		commitmentConfig: CommitmentConfig{CommitmentLevel: ConfirmedCommitmentLevel},
 	}
 
 	// apply any provided options
@@ -83,7 +83,7 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 }
 
 func (j *JSONRPCConnection) Commitment() CommitmentLevel {
-	return j.config.commitmentLevel
+	return j.config.commitmentConfig.CommitmentLevel
 }
 
 type GetBalanceJSONRPCResponse struct {
@@ -98,8 +98,10 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 		params,
 		request.PublicKey.ToBase58(),
 	)
-	if request.Commitment != "" {
-		params
+	if request.CommitmentConfig.IsBlank() {
+		params = append(params, j.config.commitmentConfig)
+	} else {
+		params = append(params, request.CommitmentConfig)
 	}
 
 	// perform rpc call
@@ -107,7 +109,7 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 		ctx,
 		"getBalance",
 		nil,
-		request.PublicKey.ToBase58(),
+		params...,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error performing getBalance json-rpc call: %w", err)
