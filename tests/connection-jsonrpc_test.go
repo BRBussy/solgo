@@ -26,7 +26,7 @@ func (suite *JSONRPCConnectionTestSuite) SetupSuite() {
 }
 
 func (suite *JSONRPCConnectionTestSuite) TestGetAccountInfo() {
-	getBalanceResponse, err := suite.jsonrpcConnection.GetAccountInfo(
+	getEncodedAccountInfoResponse, err := suite.jsonrpcConnection.GetAccountInfo(
 		context.Background(),
 		solana.GetAccountInfoRequest{
 			PublicKey:       solana.NewPublicKeyFromBase58String("7ivguYMpnUBMboByJbKc7z31fJMg2pXYQ4nNPziWLchZ"),
@@ -34,8 +34,18 @@ func (suite *JSONRPCConnectionTestSuite) TestGetAccountInfo() {
 		},
 	)
 	suite.Require().Nil(err)
+	suite.Require().NotNil(getEncodedAccountInfoResponse)
 
-	fmt.Printf("GetAccountInfoResonse: %+v\n", getBalanceResponse.AccountInfo)
+	getJSONParsedAccountInfoResponse, err := suite.jsonrpcConnection.GetAccountInfo(
+		context.Background(),
+		solana.GetAccountInfoRequest{
+			PublicKey:       solana.NewPublicKeyFromBase58String("DQLhiiGkoqRVtuBM8qczvrYdS29oWfnZcUzQJE16gZ2y"),
+			CommitmentLevel: solana.ProcessedCommitmentLevel,
+			AccountEncoding: solana.JSONParsedEncoding,
+		},
+	)
+	suite.Require().Nil(err)
+	suite.Require().NotNil(getJSONParsedAccountInfoResponse)
 }
 
 func (suite *JSONRPCConnectionTestSuite) TestGetBalance() {
