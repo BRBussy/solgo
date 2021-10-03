@@ -3,6 +3,7 @@ package solana
 import (
 	"context"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
+	"github.com/BRBussy/solgo/internal/pkg/validation"
 	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
@@ -21,6 +22,7 @@ func TestNewJSONRPCConnection(t *testing.T) {
 			name: "default config",
 			args: args{},
 			want: &JSONRPCConnection{
+				validator:     validation.MustNewGoPlaygroundValidator(),
 				jsonRPCClient: jsonrpc.NewHTTPClient(MainnetBeta.MustToRPCURL()),
 				config: &jsonrpcConnectionConfig{
 					network:         MainnetBeta,
