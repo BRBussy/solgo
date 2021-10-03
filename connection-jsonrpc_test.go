@@ -26,7 +26,7 @@ func TestNewJSONRPCConnection(t *testing.T) {
 				config: &jsonrpcConnectionConfig{
 					network:          MainnetBeta,
 					endpoint:         MainnetBeta.MustToRPCURL(),
-					commitmentConfig: CommitmentConfig{CommitmentLevel: ConfirmedCommitmentLevel},
+					commitmentConfig: CommitmentConfig{Commitment: ConfirmedCommitmentLevel},
 				},
 			},
 		},
@@ -36,14 +36,14 @@ func TestNewJSONRPCConnection(t *testing.T) {
 				opts: []JSONRPCConnectionOption{
 					WithCommitmentConfig(
 						CommitmentConfig{
-							CommitmentLevel: MaxCommitmentLevel,
+							Commitment: MaxCommitmentLevel,
 						},
 					),
 				},
 			},
 			want: func() *JSONRPCConnection {
 				c := NewJSONRPCConnection()
-				c.config.commitmentConfig.CommitmentLevel = MaxCommitmentLevel
+				c.config.commitmentConfig.Commitment = MaxCommitmentLevel
 				return c
 			}(),
 		},
@@ -96,7 +96,7 @@ func TestJSONRPCConnection_Commitment(t *testing.T) {
 			name: "basic test",
 			fields: fields{
 				config: &jsonrpcConnectionConfig{
-					commitmentConfig: CommitmentConfig{CommitmentLevel: MaxCommitmentLevel},
+					commitmentConfig: CommitmentConfig{Commitment: MaxCommitmentLevel},
 				},
 			},
 			want: MaxCommitmentLevel,
@@ -156,7 +156,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 							[]interface{}{
 								testKeyPair.PublicKey.ToBase58(),
 								CommitmentConfig{
-									CommitmentLevel: MaxCommitmentLevel,
+									Commitment: MaxCommitmentLevel,
 								},
 							},
 							params,
@@ -168,7 +168,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 				},
 				config: &jsonrpcConnectionConfig{
 					commitmentConfig: CommitmentConfig{
-						CommitmentLevel: MaxCommitmentLevel,
+						Commitment: MaxCommitmentLevel,
 					},
 				},
 			},
@@ -191,7 +191,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 							[]interface{}{
 								testKeyPair.PublicKey.ToBase58(),
 								CommitmentConfig{
-									CommitmentLevel: ProcessedCommitmentLevel,
+									Commitment: ProcessedCommitmentLevel,
 								},
 							},
 							params,
@@ -205,7 +205,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 				},
 				config: &jsonrpcConnectionConfig{
 					commitmentConfig: CommitmentConfig{
-						CommitmentLevel: MaxCommitmentLevel,
+						Commitment: MaxCommitmentLevel,
 					},
 				},
 			},
@@ -214,7 +214,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 				request: GetBalanceRequest{
 					PublicKey: testKeyPair.PublicKey,
 					CommitmentConfig: CommitmentConfig{
-						CommitmentLevel: ProcessedCommitmentLevel,
+						Commitment: ProcessedCommitmentLevel,
 					},
 				},
 			},
@@ -237,7 +237,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 				ctx: context.Background(),
 				request: GetBalanceRequest{
 					PublicKey:        testKeyPair.PublicKey,
-					CommitmentConfig: CommitmentConfig{CommitmentLevel: FinalizedCommitmentLevel},
+					CommitmentConfig: CommitmentConfig{Commitment: FinalizedCommitmentLevel},
 				},
 			},
 			want:    nil,
@@ -260,7 +260,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 				ctx: context.Background(),
 				request: GetBalanceRequest{
 					PublicKey:        testKeyPair.PublicKey,
-					CommitmentConfig: CommitmentConfig{CommitmentLevel: MaxCommitmentLevel},
+					CommitmentConfig: CommitmentConfig{Commitment: MaxCommitmentLevel},
 				},
 			},
 			want:    &successfulResponse,

@@ -1,7 +1,7 @@
 package solana
 
 type CommitmentConfig struct {
-	CommitmentLevel CommitmentLevel
+	Commitment CommitmentLevel `json:"commitment"`
 }
 
 func (c CommitmentConfig) IsBlank() bool {

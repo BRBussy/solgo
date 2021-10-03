@@ -68,7 +68,7 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	config := &jsonrpcConnectionConfig{
 		network:          MainnetBeta,
 		endpoint:         MainnetBeta.MustToRPCURL(),
-		commitmentConfig: CommitmentConfig{CommitmentLevel: ConfirmedCommitmentLevel},
+		commitmentConfig: CommitmentConfig{Commitment: ConfirmedCommitmentLevel},
 	}
 
 	// apply any provided options
@@ -83,7 +83,7 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 }
 
 func (j *JSONRPCConnection) Commitment() CommitmentLevel {
-	return j.config.commitmentConfig.CommitmentLevel
+	return j.config.commitmentConfig.Commitment
 }
 
 type GetBalanceJSONRPCResponse struct {
