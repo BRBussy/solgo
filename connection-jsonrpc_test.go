@@ -254,6 +254,53 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name: "success for JSONParsedEncoding",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: json.RawMessage(`{
+    "context": {
+      "slot": 1
+    },
+    "value": {
+      "data": {
+        "nonce": {
+          "initialized": {
+            "authority": "Bbqg1M4YVVfbhEzwA9SpC9FhsaG83YMTYoR4a8oTDLX",
+            "blockhash": "3xLP3jK6dVJwpeGeTDYTwdDK3TKchUf1gYYGHa4sF3XJ",
+            "feeCalculator": {
+              "lamportsPerSignature": 5000
+            }
+          }
+        }
+      },
+      "executable": false,
+      "lamports": 1000000000,
+      "owner": "11111111111111111111111111111111",
+      "rentEpoch": 2
+    }
+}`),
+						}, nil
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: ConfirmedCommitmentLevel,
+				},
+			},
+			args: args{
+				ctx: nil,
+				request: GetAccountInfoRequest{
+					PublicKey:       testKeyPair.PublicKey,
+					AccountEncoding: JSONParsedEncoding,
+				},
+			},
+			want: &GetAccountInfoResponse{
+				Context: Context{Slot: 1},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
