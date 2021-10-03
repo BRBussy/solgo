@@ -29,7 +29,8 @@ func (suite *JSONRPCConnectionTestSuite) TestGetBalance() {
 	getBalanceResponse, err := suite.jsonrpcConnection.GetBalance(
 		context.Background(),
 		solana.GetBalanceRequest{
-			PublicKey: solana.NewPublicKeyFromBase58String("7ivguYMpnUBMboByJbKc7z31fJMg2pXYQ4nNPziWLchZ"),
+			PublicKey:        solana.NewPublicKeyFromBase58String("7ivguYMpnUBMboByJbKc7z31fJMg2pXYQ4nNPziWLchZ"),
+			CommitmentConfig: solana.CommitmentConfig{Commitment: solana.ProcessedCommitmentLevel},
 		},
 	)
 	suite.Require().Nil(err)
