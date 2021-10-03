@@ -2,7 +2,6 @@ package solana
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
 )
@@ -15,9 +14,9 @@ type JSONRPCConnection struct {
 
 // jsonrpcConnectionConfig is the configuration for a JSONRPCConnection
 type jsonrpcConnectionConfig struct {
-	network          Network
-	endpoint         string
-	commitmentConfig CommitmentConfig
+	network         Network
+	endpoint        string
+	commitmentLevel CommitmentLevel
 }
 
 // JSONRPCConnectionOption makes a change to the jsonrpcConnectionConfig
@@ -31,10 +30,10 @@ func (fn jsonrpcConnectionOptionFunc) apply(cfg *jsonrpcConnectionConfig) {
 	fn(cfg)
 }
 
-// WithCommitmentConfig sets CommitmentConfig on the JSONRPCConnection
-func WithCommitmentConfig(c CommitmentConfig) JSONRPCConnectionOption {
+// WithCommitmentLevel sets CommitmentLevel on the JSONRPCConnection
+func WithCommitmentLevel(c CommitmentLevel) JSONRPCConnectionOption {
 	return jsonrpcConnectionOptionFunc(func(config *jsonrpcConnectionConfig) {
-		config.commitmentConfig = c
+		config.commitmentLevel = c
 	})
 }
 
@@ -67,9 +66,9 @@ func WithEndpoint(e string) JSONRPCConnectionOption {
 func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	// prepare default configuration
 	config := &jsonrpcConnectionConfig{
-		network:          MainnetBeta,
-		endpoint:         MainnetBeta.MustToRPCURL(),
-		commitmentConfig: CommitmentConfig{Commitment: ConfirmedCommitmentLevel},
+		network:         MainnetBeta,
+		endpoint:        MainnetBeta.MustToRPCURL(),
+		commitmentLevel: ConfirmedCommitmentLevel,
 	}
 
 	// apply any provided options
@@ -84,16 +83,22 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 }
 
 func (j *JSONRPCConnection) Commitment() CommitmentLevel {
-	return j.config.commitmentConfig.Commitment
+	return j.config.commitmentLevel
 }
 
 type GetAccountInfoJSONRPCResponse struct {
 	Context Context `json:"context"`
-	Value   json.RawMessage
 }
 
 func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccountInfoRequest) (*GetAccountInfoResponse, error) {
-	panic("implement me")
+	// prepare params
+	params := make([]interface{}, 0)
+	params = append(
+		params,
+		request.PublicKey.ToBase58(),
+	)
+
+	return nil, nil
 }
 
 type GetBalanceJSONRPCResponse struct {
@@ -102,16 +107,14 @@ type GetBalanceJSONRPCResponse struct {
 }
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
-	// prepare params
-	params := make([]interface{}, 0)
-	params = append(
-		params,
-		request.PublicKey.ToBase58(),
-	)
-	if request.CommitmentConfig.IsBlank() {
-		params = append(params, j.config.commitmentConfig)
-	} else {
-		params = append(params, request.CommitmentConfig)
+	// prepare configuration object
+	config := map[string]interface{}{
+		"commitment": j.Commitment(),
+	}
+
+	// set commitment level if provided
+	if request.CommitmentLevel != "" {
+		config["commitment"] = request.CommitmentLevel
 	}
 
 	// perform rpc call
@@ -119,7 +122,8 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 		ctx,
 		"getBalance",
 		nil,
-		params...,
+		request.PublicKey.ToBase58(),
+		config,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error performing getBalance json-rpc call: %w", err)
