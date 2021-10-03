@@ -122,11 +122,12 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 		request GetAccountInfoRequest
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *GetAccountInfoResponse
-		wantErr bool
+		name        string
+		fields      fields
+		args        args
+		want        *GetAccountInfoResponse
+		wantToCheck func(t *testing.T, gotResponse *GetAccountInfoResponse)
+		wantErr     bool
 	}{
 		{
 			name: "error performing CallParamArray - neither commitment nor encoding given",
@@ -296,8 +297,24 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 					AccountEncoding: JSONParsedEncoding,
 				},
 			},
-			want: &GetAccountInfoResponse{
-				Context: Context{Slot: 1},
+			wantToCheck: func(t *testing.T, gotResponse *GetAccountInfoResponse) {
+				require.Equalf(
+					t,
+					Context{Slot: 1},
+					gotResponse.Context,
+					"context not as expected",
+				)
+
+				//	data := map[string]json.RawMessage{
+				//		"nonce": json.RawMessage(`{
+				//"initialized": {
+				//  "authority": "Bbqg1M4YVVfbhEzwA9SpC9FhsaG83YMTYoR4a8oTDLX",
+				//  "blockhash": "3xLP3jK6dVJwpeGeTDYTwdDK3TKchUf1gYYGHa4sF3XJ",
+				//  "feeCalculator": {
+				//    "lamportsPerSignature": 5000
+				//  }
+				//}`),
+				//	}
 			},
 			wantErr: false,
 		},
@@ -353,7 +370,11 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			}
 			got, err := j.GetAccountInfo(tt.args.ctx, tt.args.request)
 			require.Equalf(t, tt.wantErr, err != nil, "error is nil")
-			require.Equalf(t, tt.want, got, "got neq to want")
+			if tt.wantToCheck == nil {
+				require.Equalf(t, tt.want, got, "got neq to want")
+			} else {
+				tt.wantToCheck(t, got)
+			}
 		})
 	}
 }

@@ -12,7 +12,7 @@ type AccountInfoJSONData struct {
 	Lamports uint64 `json:"lamports"`
 
 	// Data is optional data assigned to the account
-	Data map[string]map[string]json.RawMessage `json:"data"`
+	Data map[string]json.RawMessage `json:"data"`
 
 	// Owner is a base58 encoded Pubkey of the program that owns this account
 	Owner string `json:"owner"`
