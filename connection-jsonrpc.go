@@ -93,19 +93,22 @@ type GetBalanceJSONRPCResponse struct {
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
 	// perform rpc call
-	resp, err := j.jsonRPCClient.CallParamArray(
+	rpcResponse, err := j.jsonRPCClient.CallParamArray(
 		ctx,
 		"getBalance",
 		nil,
 		request.PublicKey.ToBase58(),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error with getBalance json-rpc call: %w", err)
+		return nil, fmt.Errorf("error performing getBalance json-rpc call: %w", err)
+	}
+	if rpcResponse.Error != nil {
+		return nil, fmt.Errorf("error set on rpc response: %s", rpcResponse.Error.Error())
 	}
 
 	// parse response
 	response := new(GetBalanceJSONRPCResponse)
-	if err := resp.GetObject(response); err != nil {
+	if err := rpcResponse.GetObject(response); err != nil {
 		return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
 	}
 

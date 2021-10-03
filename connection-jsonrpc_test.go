@@ -2,6 +2,7 @@ package solana
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
 	"github.com/stretchr/testify/require"
@@ -112,6 +113,20 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 	testKeyPair, err := NewRandomKeyPair()
 	require.Nil(t, err)
 
+	successfulResponse := GetBalanceResponse{
+		Context: Context{
+			Slot: 123412356234,
+		},
+		Value: 100,
+	}
+	successfulResponseJSONResult, err := json.Marshal(
+		GetBalanceJSONRPCResponse{
+			Context: successfulResponse.Context,
+			Value:   successfulResponse.Value,
+		},
+	)
+	require.Nil(t, err)
+
 	type fields struct {
 		jsonRPCClient *jsonrpc.MockClient
 		config        *jsonrpcConnectionConfig
@@ -155,6 +170,77 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: true,
+		},
+		{
+			name: "error set on rpc response",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							JSONRPC: "",
+							Result:  nil,
+							Error:   &jsonrpc.RPCError{},
+							ID:      0,
+						}, nil
+					},
+				},
+				config: nil,
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetBalanceRequest{
+					PublicKey:  testKeyPair.PublicKey,
+					Commitment: MaxCommitmentLevel,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "error parsing GetBalanceJSONRPCResponse",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: []byte("invalid data here"),
+							Error:  nil,
+						}, nil
+					},
+				},
+				config: nil,
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetBalanceRequest{
+					PublicKey:  testKeyPair.PublicKey,
+					Commitment: MaxCommitmentLevel,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "success",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: successfulResponseJSONResult,
+							Error:  nil,
+						}, nil
+					},
+				},
+				config: nil,
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetBalanceRequest{
+					PublicKey:  testKeyPair.PublicKey,
+					Commitment: MaxCommitmentLevel,
+				},
+			},
+			want:    &successfulResponse,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
