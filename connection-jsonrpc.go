@@ -91,6 +91,10 @@ type GetBalanceJSONRPCResponse struct {
 	Value   uint64  `json:"value"`
 }
 
+func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccountInfoRequest) (*GetAccountInfoResponse, error) {
+	panic("implement me")
+}
+
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
 	// prepare params
 	params := make([]interface{}, 0)
