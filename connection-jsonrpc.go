@@ -193,3 +193,7 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 		Value:   response.Value,
 	}, nil
 }
+
+func (j *JSONRPCConnection) SendTransaction(ctx context.Context, request SendTransactionRequest) (*SendTransactionResponse, error) {
+	panic("implement me")
+}
