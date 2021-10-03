@@ -61,7 +61,7 @@ func WithEndpoint(e string) JSONRPCConnectionOption {
 //  - commitmentLevel: ConfirmedCommitmentLevel
 //
 // The passed opts are used to override these default values and configure the
-// returned JSONRPCConnection appropriately.
+// returned JSONRPCConnection as desired.
 func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	// prepare default configuration
 	config := &jsonrpcConnectionConfig{
