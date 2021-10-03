@@ -95,6 +95,11 @@ type GetBalanceJSONRPCResponse struct {
 }
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
+	// validate request
+	if err := j.validator.Validate(request); err != nil {
+		return nil, err
+	}
+
 	// perform rpc call
 	resp, err := j.jsonRPCClient.CallParamArray(
 		ctx,
