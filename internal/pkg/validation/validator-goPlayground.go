@@ -2,7 +2,6 @@ package validation
 
 import (
 	"fmt"
-	"github.com/andile-innovation/james/pkg/validation"
 	enLocales "github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/rs/zerolog/log"
@@ -36,7 +35,7 @@ func (v *GoPlaygroundValidator) Validate(request interface{}) error {
 		sort.Slice(reasons, func(i, j int) bool {
 			return reasons[i] > reasons[j]
 		})
-		return validation.ErrRequestNotValid{Reason: strings.Join(reasons, ";")}
+		return ErrValidationFailed{Reason: strings.Join(reasons, ";")}
 	}
 
 	return nil

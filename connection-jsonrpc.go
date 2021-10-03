@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
+	"github.com/BRBussy/solgo/internal/pkg/validation"
 )
 
 // JSONRPCConnection is a json-rpc http implementation of the solana.Connection interface
 type JSONRPCConnection struct {
+	validator     validation.Validator
 	jsonRPCClient jsonrpc.Client
 	config        *jsonrpcConnectionConfig
 }
