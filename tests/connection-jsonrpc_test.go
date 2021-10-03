@@ -34,5 +34,5 @@ func (suite *JSONRPCConnectionTestSuite) TestGetBalance() {
 	)
 	suite.Require().Nil(err)
 
-	fmt.Println("getBalanceResponsegetBalanceResponsegetBalanceResponse", getBalanceResponse)
+	fmt.Println("getBalanceResponsegetBalanceResponsegetBalanceResponse", getBalanceResponse.Value)
 }
