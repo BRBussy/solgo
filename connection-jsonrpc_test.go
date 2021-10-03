@@ -2,9 +2,9 @@ package solana
 
 import (
 	"context"
+	"errors"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
 	"github.com/stretchr/testify/require"
-	"reflect"
 	"testing"
 )
 
@@ -109,8 +109,11 @@ func TestJSONRPCConnection_Commitment(t *testing.T) {
 }
 
 func TestJSONRPCConnection_GetBalance(t *testing.T) {
+	testKeyPair, err := NewRandomKeyPair()
+	require.Nil(t, err)
+
 	type fields struct {
-		jsonRPCClient jsonrpc.Client
+		jsonRPCClient *jsonrpc.MockClient
 		config        *jsonrpcConnectionConfig
 	}
 	type args struct {
@@ -123,21 +126,47 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 		args    args
 		want    *GetBalanceResponse
 		wantErr bool
-	}{}
+	}{
+		{
+			name: "error performing json rpc call",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						require.Equalf(
+							t,
+							[]interface{}{
+								testKeyPair.PublicKey.ToBase58(),
+							},
+							params,
+							"params not as expected",
+						)
+
+						return nil, errors.New("some err")
+					},
+				},
+				config: nil,
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetBalanceRequest{
+					PublicKey:  testKeyPair.PublicKey,
+					Commitment: MaxCommitmentLevel,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.fields.jsonRPCClient.T = t
 			j := &JSONRPCConnection{
 				jsonRPCClient: tt.fields.jsonRPCClient,
 				config:        tt.fields.config,
 			}
 			got, err := j.GetBalance(tt.args.ctx, tt.args.request)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetBalance() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetBalance() got = %v, want %v", got, tt.want)
-			}
+			require.Equalf(t, tt.wantErr, err != nil, "error is nil")
+			require.Equalf(t, tt.want, got, "got neq to want")
 		})
 	}
 }
