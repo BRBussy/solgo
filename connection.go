@@ -44,12 +44,24 @@ type SendTransactionRequest struct {
 	CommitmentLevel CommitmentLevel
 	// SkipPreflight can be set to true to skip the
 	// preflight transaction checks.
-	//  Default value if not specified is false.
+	// Default value if not specified is false.
 	SkipPreflight bool
 
 	// PreflightCommitment is the Commitment level to use for
-	// preflight. Default value if not specified is "finalized".
+	// preflight.
+	// Default value if not specified is "finalized".
 	PreflightCommitment bool
+
+	// Encoding is the Encoding used for the transaction data.
+	// Either "base58" (slow, DEPRECATED), or "base64".
+	// Default value if not specified is "base58".
+	Encoding Encoding
+
+	// MaxRetries is them maximum number of times for the RPC node
+	// to retry sending the transaction to the leader.
+	// If this parameter not provided, the RPC node will retry the
+	// transaction until it is finalized or until the blockhash expires.
+	MaxRetries uint
 }
 
 type SendTransactionResponse struct {
