@@ -20,5 +20,5 @@ type GetBalanceRequest struct {
 
 type GetBalanceResponse struct {
 	Context Context
-	Balance uint64
+	Value   uint64
 }

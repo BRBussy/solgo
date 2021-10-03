@@ -2,6 +2,7 @@ package solana
 
 import (
 	"context"
+	"fmt"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
 )
 
@@ -91,10 +92,25 @@ type GetBalanceJSONRPCResponse struct {
 }
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
-	//resp, err := j.jsonRPCClient.CallParamArray(
-	//	ctx,
-	//	"getBalance",
-	//	request.PublicKey,
-	//)
-	return nil, nil
+	// perform rpc call
+	resp, err := j.jsonRPCClient.CallParamArray(
+		ctx,
+		"getBalance",
+		nil,
+		request.PublicKey.ToBase58(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error with getBalance json-rpc call: %w", err)
+	}
+
+	// parse response
+	response := new(GetBalanceJSONRPCResponse)
+	if err := resp.GetObject(response); err != nil {
+		return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+	}
+
+	return &GetBalanceResponse{
+		Context: response.Context,
+		Value:   response.Value,
+	}, nil
 }
