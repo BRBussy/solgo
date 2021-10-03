@@ -6,7 +6,7 @@ import "context"
 
 // Connection represents a connection to a fullnode JSON RPC endpoint
 type Connection interface {
-	// Commitment returns the default commitment used for requests
+	// Commitment returns the default commitmentLevel used for requests
 	Commitment() CommitmentLevel
 
 	// GetBalance returns the balance of the account of provided PublicKey

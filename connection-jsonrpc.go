@@ -6,13 +6,26 @@ import (
 )
 
 type jsonrpcConnectionConfig struct {
-	network    Network
-	endpoint   string
-	commitment CommitmentLevel
+	network         Network
+	endpoint        string
+	commitmentLevel CommitmentLevel
 }
 
 type JSONRPCConnectionOption interface {
 	apply(*jsonrpcConnectionConfig)
+}
+
+type jsonrpcConnectionOptionFunc func(*jsonrpcConnectionConfig)
+
+func (fn jsonrpcConnectionOptionFunc) apply(cfg *jsonrpcConnectionConfig) {
+	fn(cfg)
+}
+
+// WithCommitmentLevel sets CommitmentLevel on the JSONRPCConnection
+func WithCommitmentLevel(c CommitmentLevel) JSONRPCConnectionOption {
+	return jsonrpcConnectionOptionFunc(func(config *jsonrpcConnectionConfig) {
+		config.commitmentLevel = c
+	})
 }
 
 // JSONRPCConnection is a json-rpc http implementation of the solana.Connection interface
@@ -32,9 +45,9 @@ type JSONRPCConnection struct {
 func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	// prepare default configuration
 	config := &jsonrpcConnectionConfig{
-		network:    MainnetBeta,
-		endpoint:   MainnetBeta.MustToRPCURL(),
-		commitment: ConfirmedCommitmentLevel,
+		network:         MainnetBeta,
+		endpoint:        MainnetBeta.MustToRPCURL(),
+		commitmentLevel: ConfirmedCommitmentLevel,
 	}
 
 	return &JSONRPCConnection{
@@ -44,7 +57,7 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 }
 
 func (j *JSONRPCConnection) Commitment() CommitmentLevel {
-	return j.config.commitment
+	return j.config.commitmentLevel
 }
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
