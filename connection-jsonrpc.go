@@ -28,6 +28,23 @@ func WithCommitmentLevel(c CommitmentLevel) JSONRPCConnectionOption {
 	})
 }
 
+// WithNetwork sets Network on the JSONRPCConnection
+// Note that this does not change the endpoint that the connection
+// communicates with and so the WithEndpoint option may also need to
+// be applied.
+func WithNetwork(c Network) JSONRPCConnectionOption {
+	return jsonrpcConnectionOptionFunc(func(config *jsonrpcConnectionConfig) {
+		config.network = c
+	})
+}
+
+// WithEndpoint sets endpoint on the JSONRPCConnection
+func WithEndpoint(e string) JSONRPCConnectionOption {
+	return jsonrpcConnectionOptionFunc(func(config *jsonrpcConnectionConfig) {
+		config.endpoint = e
+	})
+}
+
 // JSONRPCConnection is a json-rpc http implementation of the solana.Connection interface
 type JSONRPCConnection struct {
 	jsonRPCClient jsonrpc.Client
@@ -48,6 +65,11 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 		network:         MainnetBeta,
 		endpoint:        MainnetBeta.MustToRPCURL(),
 		commitmentLevel: ConfirmedCommitmentLevel,
+	}
+
+	// apply any provided options
+	for _, opt := range opts {
+		opt.apply(config)
 	}
 
 	return &JSONRPCConnection{
