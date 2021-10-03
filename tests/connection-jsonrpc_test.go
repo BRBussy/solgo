@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	solana "github.com/BRBussy/solgo"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -25,11 +26,13 @@ func (suite *JSONRPCConnectionTestSuite) SetupSuite() {
 }
 
 func (suite *JSONRPCConnectionTestSuite) TestGetBalance() {
-	_, err := suite.jsonrpcConnection.GetBalance(
+	getBalanceResponse, err := suite.jsonrpcConnection.GetBalance(
 		context.Background(),
 		solana.GetBalanceRequest{
-			PublicKey: nil,
+			PublicKey: solana.NewPublicKeyFromBase58String("7ivguYMpnUBMboByJbKc7z31fJMg2pXYQ4nNPziWLchZ"),
 		},
 	)
 	suite.Require().Nil(err)
+
+	fmt.Println("getBalanceResponsegetBalanceResponsegetBalanceResponse", getBalanceResponse)
 }
