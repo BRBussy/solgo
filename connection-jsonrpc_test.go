@@ -305,16 +305,34 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 					"context not as expected",
 				)
 
-				//	data := map[string]json.RawMessage{
-				//		"nonce": json.RawMessage(`{
-				//"initialized": {
-				//  "authority": "Bbqg1M4YVVfbhEzwA9SpC9FhsaG83YMTYoR4a8oTDLX",
-				//  "blockhash": "3xLP3jK6dVJwpeGeTDYTwdDK3TKchUf1gYYGHa4sF3XJ",
-				//  "feeCalculator": {
-				//    "lamportsPerSignature": 5000
-				//  }
-				//}`),
-				//	}
+				// ensure account info type is as expected
+				typedAccountInfo, ok := gotResponse.AccountInfo.(AccountInfoJSONData)
+				require.Truef(t, ok, "unable to cast to AccountInfoJSONData")
+
+				data := map[string]json.RawMessage{
+					"nonce": json.RawMessage(`{
+				"initialized": {
+				 "authority": "Bbqg1M4YVVfbhEzwA9SpC9FhsaG83YMTYoR4a8oTDLX",
+				 "blockhash": "3xLP3jK6dVJwpeGeTDYTwdDK3TKchUf1gYYGHa4sF3XJ",
+				 "feeCalculator": {
+				   "lamportsPerSignature": 5000
+				 }
+				}
+}`),
+				}
+
+				// extract nonce data
+				expectedNonceData := data["nonce"]
+				gotNonceData, found := typedAccountInfo.Data["nonce"]
+				require.Truef(t, found, "nonce data not found on received data")
+
+				require.JSONEqf(
+					t,
+					string(expectedNonceData),
+					string(gotNonceData),
+					"json data not as expected",
+				)
+
 			},
 			wantErr: false,
 		},
