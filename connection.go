@@ -41,6 +41,10 @@ type GetBalanceResponse struct {
 }
 
 type SendTransactionRequest struct {
+	// Transaction is the transaction being sent.
+	// Note: it should already be signed.
+	Transaction Transaction
+
 	CommitmentLevel CommitmentLevel
 	// SkipPreflight can be set to true to skip the
 	// preflight transaction checks.
