@@ -85,6 +85,16 @@ func (j *JSONRPCConnection) Commitment() CommitmentLevel {
 	return j.config.commitmentLevel
 }
 
+type GetBalanceJSONRPCResponse struct {
+	Context Context `json:"context"`
+	Value   uint64  `json:"value"`
+}
+
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
+	//resp, err := j.jsonRPCClient.CallParamArray(
+	//	ctx,
+	//	"getBalance",
+	//	request.PublicKey,
+	//)
 	return nil, nil
 }
