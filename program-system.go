@@ -1,9 +1,18 @@
 package solana
 
+func init() {
+	SystemProgram = &systemProgram{
+		programID: NewPublicKeyFromBase58String(""),
+	}
+}
+
+var SystemProgram *systemProgram
+
 // SystemProgram is the api for the Solana system program.
 // See instruction definitions here:
 // https://github.com/solana-labs/solana/blob/4b2fe9b20d4c895f4d3cb58c2918c72a5b0a5b64/sdk/program/src/system_instruction.rs#L142
-type SystemProgram struct {
+type systemProgram struct {
+	programID PublicKey
 }
 
 type CreateAccountParams struct {
@@ -28,6 +37,6 @@ type CreateAccountParams struct {
 	ProgramID PublicKey
 }
 
-func (s *SystemProgram) CreateAccount(params CreateAccountParams) (*Instruction, error) {
+func (s *systemProgram) CreateAccount(params CreateAccountParams) (*Instruction, error) {
 	return &Instruction{}, nil
 }
