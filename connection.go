@@ -2,19 +2,6 @@ package solana
 
 import "context"
 
-type Commitment string
-
-var (
-	ProcessedCommitment    = "processed"
-	ConfirmedCommitment    = "confirmed"
-	FinalizedCommitment    = "finalized"
-	RecentCommitment       = "recent"
-	SingleCommitment       = "single"
-	SingleGossipCommitment = "singleGossip"
-	RootCommitment         = "root"
-	MaxCommitment          = "max"
-)
-
 // Connection represents a connection to a fullnode JSON RPC endpoint
 type Connection interface {
 	// Commitment returns the default commitment used for requests
