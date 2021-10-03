@@ -147,7 +147,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "error performing json rpc call",
+			name: "error performing json rpc call - commitment config not provided",
 			fields: fields{
 				jsonRPCClient: &jsonrpc.MockClient{
 					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
@@ -155,6 +155,9 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 							t,
 							[]interface{}{
 								testKeyPair.PublicKey.ToBase58(),
+								CommitmentConfig{
+									CommitmentLevel: MaxCommitmentLevel,
+								},
 							},
 							params,
 							"params not as expected",
@@ -163,7 +166,11 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 						return nil, errors.New("some err")
 					},
 				},
-				config: nil,
+				config: &jsonrpcConnectionConfig{
+					commitmentConfig: CommitmentConfig{
+						CommitmentLevel: MaxCommitmentLevel,
+					},
+				},
 			},
 			args: args{
 				ctx: context.Background(),
@@ -175,24 +182,40 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error set on rpc response",
+			name: "error set on rpc response - commitment config provided",
 			fields: fields{
 				jsonRPCClient: &jsonrpc.MockClient{
 					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						require.Equalf(
+							t,
+							[]interface{}{
+								testKeyPair.PublicKey.ToBase58(),
+								CommitmentConfig{
+									CommitmentLevel: ProcessedCommitmentLevel,
+								},
+							},
+							params,
+							"params not as expected",
+						)
+
 						return &jsonrpc.RPCResponse{
-							JSONRPC: "",
-							Result:  nil,
-							Error:   &jsonrpc.RPCError{},
-							ID:      0,
+							Error: &jsonrpc.RPCError{Message: "bad things happened"},
 						}, nil
 					},
 				},
-				config: nil,
+				config: &jsonrpcConnectionConfig{
+					commitmentConfig: CommitmentConfig{
+						CommitmentLevel: MaxCommitmentLevel,
+					},
+				},
 			},
 			args: args{
 				ctx: context.Background(),
 				request: GetBalanceRequest{
 					PublicKey: testKeyPair.PublicKey,
+					CommitmentConfig: CommitmentConfig{
+						CommitmentLevel: ProcessedCommitmentLevel,
+					},
 				},
 			},
 			want:    nil,
@@ -209,12 +232,12 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 						}, nil
 					},
 				},
-				config: nil,
 			},
 			args: args{
 				ctx: context.Background(),
 				request: GetBalanceRequest{
-					PublicKey: testKeyPair.PublicKey,
+					PublicKey:        testKeyPair.PublicKey,
+					CommitmentConfig: CommitmentConfig{CommitmentLevel: FinalizedCommitmentLevel},
 				},
 			},
 			want:    nil,
@@ -236,7 +259,8 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				request: GetBalanceRequest{
-					PublicKey: testKeyPair.PublicKey,
+					PublicKey:        testKeyPair.PublicKey,
+					CommitmentConfig: CommitmentConfig{CommitmentLevel: MaxCommitmentLevel},
 				},
 			},
 			want:    &successfulResponse,
