@@ -119,36 +119,36 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 	}
 
 	// parse response by type
-	var respCtx Context
+	var response GetAccountInfoResponse
 	switch request.AccountEncoding {
 	case JSONParsedEncoding:
-		response := new(
+		r := new(
 			struct {
 				Context Context             `json:"context"`
 				Value   AccountInfoJSONData `json:"value"`
 			},
 		)
-		if err := rpcResponse.GetObject(response); err != nil {
+		if err := rpcResponse.GetObject(r); err != nil {
 			return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
 		}
-		respCtx = response.Context
+		response.Context = r.Context
+		response.AccountInfo = r.Value
 
 	default:
-		response := new(
+		r := new(
 			struct {
-				Context Context                       `json:"context"`
-				Value   AccountInfoEncodedAccountData `json:"value"`
+				Context Context                `json:"context"`
+				Value   AccountInfoEncodedData `json:"value"`
 			},
 		)
-		if err := rpcResponse.GetObject(response); err != nil {
+		if err := rpcResponse.GetObject(r); err != nil {
 			return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
 		}
-		respCtx = response.Context
+		response.Context = r.Context
+		response.AccountInfo = r.Value
 	}
 
-	return &GetAccountInfoResponse{
-		Context: respCtx,
-	}, nil
+	return &response, nil
 }
 
 type GetBalanceJSONRPCResponse struct {
