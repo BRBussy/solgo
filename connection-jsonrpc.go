@@ -5,12 +5,20 @@ import (
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
 )
 
+// JSONRPCConnection is a json-rpc http implementation of the solana.Connection interface
+type JSONRPCConnection struct {
+	jsonRPCClient jsonrpc.Client
+	config        *jsonrpcConnectionConfig
+}
+
+// jsonrpcConnectionConfig is the configuration for a JSONRPCConnection
 type jsonrpcConnectionConfig struct {
 	network         Network
 	endpoint        string
 	commitmentLevel CommitmentLevel
 }
 
+// JSONRPCConnectionOption makes a change to the jsonrpcConnectionConfig
 type JSONRPCConnectionOption interface {
 	apply(*jsonrpcConnectionConfig)
 }
@@ -43,12 +51,6 @@ func WithEndpoint(e string) JSONRPCConnectionOption {
 	return jsonrpcConnectionOptionFunc(func(config *jsonrpcConnectionConfig) {
 		config.endpoint = e
 	})
-}
-
-// JSONRPCConnection is a json-rpc http implementation of the solana.Connection interface
-type JSONRPCConnection struct {
-	jsonRPCClient jsonrpc.Client
-	config        *jsonrpcConnectionConfig
 }
 
 // NewJSONRPCConnection returns a new and configured JSONRPCConnection.
