@@ -92,6 +92,16 @@ type GetBalanceJSONRPCResponse struct {
 }
 
 func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error) {
+	// prepare params
+	params := make([]interface{}, 0)
+	params = append(
+		params,
+		request.PublicKey.ToBase58(),
+	)
+	if request.Commitment != "" {
+		params
+	}
+
 	// perform rpc call
 	rpcResponse, err := j.jsonRPCClient.CallParamArray(
 		ctx,

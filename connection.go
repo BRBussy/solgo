@@ -9,8 +9,20 @@ type Connection interface {
 	// Commitment returns the default commitmentLevel used for requests
 	Commitment() CommitmentLevel
 
+	// GetAccountInfo returns all the account info for the specified PublicKey
+	GetAccountInfo(ctx context.Context, request GetAccountInfoRequest) (*GetAccountInfoResponse, error)
+
 	// GetBalance returns the balance of the account of provided PublicKey
 	GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error)
+}
+
+type GetAccountInfoRequest struct {
+	PublicKey  PublicKey `validate:"required"`
+	Commitment CommitmentLevel
+}
+
+type GetAccountInfoResponse struct {
+	Context Context
 }
 
 type GetBalanceRequest struct {
