@@ -99,8 +99,8 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 	}
 
 	// set encoding if provided
-	if request.AccountEncoding != "" {
-		config["encoding"] = request.AccountEncoding
+	if request.Encoding != "" {
+		config["encoding"] = request.Encoding
 	}
 
 	// perform rpc call
@@ -120,7 +120,7 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 
 	// parse response by type
 	var response GetAccountInfoResponse
-	switch request.AccountEncoding {
+	switch request.Encoding {
 	case JSONParsedEncoding:
 		r := new(
 			struct {

@@ -160,7 +160,7 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 				request: GetAccountInfoRequest{
 					PublicKey:       testKeyPair.PublicKey,
 					CommitmentLevel: "",
-					AccountEncoding: "",
+					Encoding:        "",
 				},
 			},
 			want:    nil,
@@ -201,7 +201,7 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 				request: GetAccountInfoRequest{
 					PublicKey:       testKeyPair.PublicKey,
 					CommitmentLevel: MaxCommitmentLevel,
-					AccountEncoding: JSONParsedEncoding,
+					Encoding:        JSONParsedEncoding,
 				},
 			},
 			want:    nil,
@@ -224,8 +224,8 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			args: args{
 				ctx: nil,
 				request: GetAccountInfoRequest{
-					PublicKey:       testKeyPair.PublicKey,
-					AccountEncoding: JSONParsedEncoding,
+					PublicKey: testKeyPair.PublicKey,
+					Encoding:  JSONParsedEncoding,
 				},
 			},
 			want:    nil,
@@ -248,8 +248,8 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			args: args{
 				ctx: nil,
 				request: GetAccountInfoRequest{
-					PublicKey:       testKeyPair.PublicKey,
-					AccountEncoding: Base58AccountEncoding,
+					PublicKey: testKeyPair.PublicKey,
+					Encoding:  Base58AccountEncoding,
 				},
 			},
 			want:    nil,
@@ -293,8 +293,8 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			args: args{
 				ctx: nil,
 				request: GetAccountInfoRequest{
-					PublicKey:       testKeyPair.PublicKey,
-					AccountEncoding: JSONParsedEncoding,
+					PublicKey: testKeyPair.PublicKey,
+					Encoding:  JSONParsedEncoding,
 				},
 			},
 			wantToCheck: func(t *testing.T, gotResponse *GetAccountInfoResponse) {
@@ -367,8 +367,8 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			args: args{
 				ctx: nil,
 				request: GetAccountInfoRequest{
-					PublicKey:       testKeyPair.PublicKey,
-					AccountEncoding: Base58AccountEncoding,
+					PublicKey: testKeyPair.PublicKey,
+					Encoding:  Base58AccountEncoding,
 				},
 			},
 			want: &GetAccountInfoResponse{

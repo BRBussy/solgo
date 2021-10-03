@@ -41,7 +41,7 @@ func (suite *JSONRPCConnectionTestSuite) TestGetAccountInfo() {
 		solana.GetAccountInfoRequest{
 			PublicKey:       solana.NewPublicKeyFromBase58String("DQLhiiGkoqRVtuBM8qczvrYdS29oWfnZcUzQJE16gZ2y"),
 			CommitmentLevel: solana.ProcessedCommitmentLevel,
-			AccountEncoding: solana.JSONParsedEncoding,
+			Encoding:        solana.JSONParsedEncoding,
 		},
 	)
 	suite.Require().Nil(err)

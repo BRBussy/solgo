@@ -1,7 +1,7 @@
 package solana
 
 // AccountInfoEncodedData is information describing an account
-// with data field encoded accorded to a prescribed AccountEncoding
+// with data field encoded accorded to a prescribed Encoding
 type AccountInfoEncodedData struct {
 	// Executable is true if this account's Data contains a loaded program
 	Executable bool `json:"executable"`
@@ -35,11 +35,11 @@ func (e AccountInfoEncodedData) GetRentEpoch() uint64 {
 	return e.RentEpoch
 }
 
-func (e AccountInfoEncodedData) GetEncoding() AccountEncoding {
+func (e AccountInfoEncodedData) GetEncoding() Encoding {
 	if len(e.Data) != 2 {
 		return ""
 	}
-	return AccountEncoding(e.Data[1])
+	return Encoding(e.Data[1])
 }
 
 func (e AccountInfoEncodedData) GetData() string {
