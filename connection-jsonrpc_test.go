@@ -301,6 +301,46 @@ func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "success for base58 encoding",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: json.RawMessage(`{
+    "context": {
+      "slot": 1
+    },
+    "value": {
+      "data": [
+        "11116bv5nS2h3y12kD1yUKeMZvGcKLSjQgX6BeV7u1FrjeJcKfsHRTPuR3oZ1EioKtYGiYxpxMG5vpbZLsbcBYBEmZZcMKaSoGx9JZeAuWf",
+        "base58"
+      ],
+      "executable": false,
+      "lamports": 1000000000,
+      "owner": "11111111111111111111111111111111",
+      "rentEpoch": 2
+    }
+  }`),
+						}, nil
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: ConfirmedCommitmentLevel,
+				},
+			},
+			args: args{
+				ctx: nil,
+				request: GetAccountInfoRequest{
+					PublicKey:       testKeyPair.PublicKey,
+					AccountEncoding: Base58AccountEncoding,
+				},
+			},
+			want: &GetAccountInfoResponse{
+				Context: Context{Slot: 1},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
