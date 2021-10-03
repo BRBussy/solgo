@@ -41,10 +41,7 @@ func (v *GoPlaygroundValidator) Validate(request interface{}) error {
 	return nil
 }
 
-func NewValidator(
-	customValidations []CustomValidation,
-	customTranslations []CustomTranslation,
-) (*GoPlaygroundValidator, error) {
+func NewValidator() (*GoPlaygroundValidator, error) {
 	e := enLocales.New()
 	uni := ut.New(e, e)
 	trans, _ := uni.GetTranslator("en")
@@ -59,44 +56,14 @@ func NewValidator(
 		)
 	}
 
-	// register default translation overrides
-	if err := registerDefaultOverrideTranslations(vv, trans); err != nil {
-		log.Error().Err(err).Msg("could not register default override translations")
-		return nil, fmt.Errorf(
-			"could not register default override translations: %w",
-			err,
-		)
-	}
-
-	// register custom translations
-	if err := registerCustomTranslations(vv, trans, customTranslations); err != nil {
-		log.Error().Err(err).Msg("could not register custom translations")
-		return nil, fmt.Errorf(
-			"could not register custom translations: %w",
-			err,
-		)
-	}
-
-	// register custom validation functions
-	if err := registerCustomValidations(vv, customValidations); err != nil {
-		log.Error().Err(err).Msg("could not register custom validations translations")
-		return nil, fmt.Errorf(
-			"could not register custom validations translations: %w",
-			err,
-		)
-	}
-
 	return &GoPlaygroundValidator{
 		validate:   vv,
 		translator: trans,
 	}, nil
 }
 
-func MustNewGoPlaygroundValidator(
-	customValidations []CustomValidation,
-	customTranslations []CustomTranslation,
-) *GoPlaygroundValidator {
-	v, err := NewValidator(customValidations, customTranslations)
+func MustNewGoPlaygroundValidator() *GoPlaygroundValidator {
+	v, err := NewValidator()
 	if err != nil {
 		log.Fatal().Err(err).Msg("could not create go playground validator")
 	}

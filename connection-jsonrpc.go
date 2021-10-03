@@ -79,6 +79,7 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	}
 
 	return &JSONRPCConnection{
+		validator:     validation.MustNewGoPlaygroundValidator(),
 		jsonRPCClient: jsonrpc.NewHTTPClient(config.endpoint),
 		config:        config,
 	}
