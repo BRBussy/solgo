@@ -45,16 +45,15 @@ type SendTransactionRequest struct {
 	// Note: it should already be signed.
 	Transaction Transaction
 
-	CommitmentLevel CommitmentLevel
 	// SkipPreflight can be set to true to skip the
 	// preflight transaction checks.
 	// Default value if not specified is false.
 	SkipPreflight bool
 
-	// PreflightCommitment is the Commitment level to use for
-	// preflight.
+	// PreflightCommitmentLevel is the CommitmentLevel
+	// to use for preflight checks.
 	// Default value if not specified is "finalized".
-	PreflightCommitment bool
+	PreflightCommitmentLevel string
 
 	// Encoding is the Encoding used for the transaction data.
 	// Either "base58" (slow, DEPRECATED), or "base64".
@@ -69,4 +68,7 @@ type SendTransactionRequest struct {
 }
 
 type SendTransactionResponse struct {
+	// TransactionID is the First Transaction Signature embedded
+	// in the transaction, as base58 encoded string - aka. transaction id
+	TransactionID string
 }

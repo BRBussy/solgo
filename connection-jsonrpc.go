@@ -195,5 +195,64 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 }
 
 func (j *JSONRPCConnection) SendTransaction(ctx context.Context, request SendTransactionRequest) (*SendTransactionResponse, error) {
-	panic("implement me")
+	// prepare configuration object
+	config := map[string]interface{}{
+		"skipPreflight": request.SkipPreflight,
+	}
+
+	// prepare transaction as indicated
+	var txnData string
+	var err error
+	switch request.Encoding {
+	case Base64Encoding:
+		config["encoding"] = Base64Encoding
+		txnData, err = request.Transaction.ToBase64()
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling to base64: %w", err)
+		}
+
+	case Base58Encoding:
+		fallthrough
+	default:
+		config["encoding"] = Base58Encoding
+		txnData, err = request.Transaction.ToBase58()
+		if err != nil {
+			return nil, fmt.Errorf("error marshalling to base58: %w", err)
+		}
+	}
+
+	// set preflightCommitment level if provided
+	if request.PreflightCommitmentLevel != "" {
+		config["preflightCommitment"] = request.PreflightCommitmentLevel
+	}
+
+	// set maxRetries if provided
+	if request.MaxRetries != 0 {
+		config["maxRetries"] = request.MaxRetries
+	}
+
+	// perform rpc call
+	rpcResponse, err := j.jsonRPCClient.CallParamArray(
+		ctx,
+		"sendTransaction",
+		nil,
+		txnData,
+		config,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error performing sendTransaction json-rpc call: %w", err)
+	}
+	if rpcResponse.Error != nil {
+		return nil, fmt.Errorf("error set on rpc response: %s", rpcResponse.Error.Error())
+	}
+
+	// parse response
+	response := new(string)
+	if err := rpcResponse.GetObject(response); err != nil {
+		return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+	}
+
+	return &SendTransactionResponse{
+		TransactionID: *response,
+	}, nil
 }
