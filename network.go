@@ -15,8 +15,9 @@ func (n Network) String() string {
 	return string(n)
 }
 
-// ToRPCURL returns the the rpc url of the relevant public
+// ToRPCURL returns the rpc url of the relevant public
 // Solana foundation nodes for MainnetBeta, Testnet and Devnet.
+// Returns an error if Network n is invalid.
 func (n Network) ToRPCURL() (string, error) {
 	switch n {
 	case MainnetBeta:
@@ -33,4 +34,15 @@ func (n Network) ToRPCURL() (string, error) {
 	}
 
 	return "", fmt.Errorf("%s: %w", n, ErrUnexpectedNetwork)
+}
+
+// MustToRPCURL returns the rpc url of the relevant public
+// Solana foundation nodes for MainnetBeta, Testnet and Devnet.
+// Panics if Network n is invalid.
+func (n Network) MustToRPCURL() string {
+	rpcURL, err := n.ToRPCURL()
+	if err != nil {
+		panic(err)
+	}
+	return rpcURL
 }
