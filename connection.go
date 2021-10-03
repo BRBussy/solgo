@@ -21,8 +21,7 @@ type GetAccountInfoRequest struct {
 }
 
 type GetAccountInfoResponse struct {
-	Context     Context
-	AccountInfo AccountInfo
+	Context Context
 }
 
 type GetBalanceRequest struct {

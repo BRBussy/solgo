@@ -2,6 +2,7 @@ package solana
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
 )
@@ -87,8 +88,8 @@ func (j *JSONRPCConnection) Commitment() CommitmentLevel {
 }
 
 type GetAccountInfoJSONRPCResponse struct {
-	Context Context     `json:"context"`
-	Value   AccountInfo `json:"value"`
+	Context Context `json:"context"`
+	Value   json.RawMessage
 }
 
 func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccountInfoRequest) (*GetAccountInfoResponse, error) {
