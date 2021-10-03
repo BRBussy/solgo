@@ -17,7 +17,7 @@ type Connection interface {
 type GetAccountInfoRequest struct {
 	PublicKey        PublicKey `validate:"required"`
 	CommitmentConfig CommitmentConfig
-	Encoding         EncodingConfig
+	EncodingConfig   EncodingConfig
 }
 
 type GetAccountInfoResponse struct {

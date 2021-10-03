@@ -22,8 +22,8 @@ type AccountInfo struct {
 type AccountEncoding string
 
 var (
-	// Base58AccountEncoding encodes the AccountInfo.Data field in base58.
-	// With this encoding set account data must be < 129 bytes
+	// Base58AccountEncoding encodes the AccountInfo.Data field in base58 (is slower!)
+	// With this encoding set account data must be < 129 bytes.
 	Base58AccountEncoding AccountEncoding = "base58"
 
 	// Base64AccountEncoding encodes the AccountInfo.Data field in base64.
@@ -40,3 +40,11 @@ var (
 	// falls back to "base64" encoding, detectable when the data field is type <string>.
 	JSONParsedEncoding AccountEncoding = "jsonParsed"
 )
+
+type EncodingConfig struct {
+	Encoding AccountEncoding `json:"encoding"`
+}
+
+func (e EncodingConfig) IsBlank() bool {
+	return e == EncodingConfig{}
+}
