@@ -86,19 +86,69 @@ func (j *JSONRPCConnection) Commitment() CommitmentLevel {
 	return j.config.commitmentLevel
 }
 
-type GetAccountInfoJSONRPCResponse struct {
-	Context Context `json:"context"`
-}
-
 func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccountInfoRequest) (*GetAccountInfoResponse, error) {
-	// prepare params
-	params := make([]interface{}, 0)
-	params = append(
-		params,
-		request.PublicKey.ToBase58(),
-	)
+	// prepare configuration object
+	config := map[string]interface{}{
+		"commitment": j.Commitment(),
+		"encoding":   Base64AccountEncoding,
+	}
 
-	return nil, nil
+	// set commitment level if provided
+	if request.CommitmentLevel != "" {
+		config["commitment"] = request.CommitmentLevel
+	}
+
+	// set encoding if provided
+	if request.AccountEncoding != "" {
+		config["encoding"] = request.AccountEncoding
+	}
+
+	// perform rpc call
+	rpcResponse, err := j.jsonRPCClient.CallParamArray(
+		ctx,
+		"getAccountInfo",
+		nil,
+		request.PublicKey.ToBase58(),
+		config,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error performing getAccountInfo json-rpc call: %w", err)
+	}
+	if rpcResponse.Error != nil {
+		return nil, fmt.Errorf("error set on rpc response: %s", rpcResponse.Error.Error())
+	}
+
+	// parse response by type
+	var respCtx Context
+	switch request.AccountEncoding {
+	case JSONParsedEncoding:
+		response := new(
+			struct {
+				Context Context             `json:"context"`
+				Value   AccountInfoJSONData `json:"value"`
+			},
+		)
+		if err := rpcResponse.GetObject(response); err != nil {
+			return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+		}
+		respCtx = response.Context
+
+	default:
+		response := new(
+			struct {
+				Context Context                       `json:"context"`
+				Value   AccountInfoEncodedAccountData `json:"value"`
+			},
+		)
+		if err := rpcResponse.GetObject(response); err != nil {
+			return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+		}
+		respCtx = response.Context
+	}
+
+	return &GetAccountInfoResponse{
+		Context: respCtx,
+	}, nil
 }
 
 type GetBalanceJSONRPCResponse struct {

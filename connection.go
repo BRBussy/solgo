@@ -17,7 +17,7 @@ type Connection interface {
 type GetAccountInfoRequest struct {
 	PublicKey       PublicKey
 	CommitmentLevel CommitmentLevel
-	EncodingConfig  EncodingConfig
+	AccountEncoding AccountEncoding
 }
 
 type GetAccountInfoResponse struct {

@@ -109,6 +109,44 @@ func TestJSONRPCConnection_Commitment(t *testing.T) {
 	}
 }
 
+func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
+	type fields struct {
+		jsonRPCClient *jsonrpc.MockClient
+		config        *jsonrpcConnectionConfig
+	}
+	type args struct {
+		ctx     context.Context
+		request GetAccountInfoRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *GetAccountInfoResponse
+		wantErr bool
+	}{
+		{
+			name:    "",
+			fields:  fields{},
+			args:    args{},
+			want:    nil,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.fields.jsonRPCClient.T = t
+			j := &JSONRPCConnection{
+				jsonRPCClient: tt.fields.jsonRPCClient,
+				config:        tt.fields.config,
+			}
+			got, err := j.GetAccountInfo(tt.args.ctx, tt.args.request)
+			require.Equalf(t, tt.wantErr, err != nil, "error is nil")
+			require.Equalf(t, tt.want, got, "got neq to want")
+		})
+	}
+}
+
 func TestJSONRPCConnection_GetBalance(t *testing.T) {
 	testKeyPair, err := NewRandomKeyPair()
 	require.Nil(t, err)
@@ -270,36 +308,6 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 				config:        tt.fields.config,
 			}
 			got, err := j.GetBalance(tt.args.ctx, tt.args.request)
-			require.Equalf(t, tt.wantErr, err != nil, "error is nil")
-			require.Equalf(t, tt.want, got, "got neq to want")
-		})
-	}
-}
-
-func TestJSONRPCConnection_GetAccountInfo(t *testing.T) {
-	type fields struct {
-		jsonRPCClient *jsonrpc.MockClient
-		config        *jsonrpcConnectionConfig
-	}
-	type args struct {
-		ctx     context.Context
-		request GetAccountInfoRequest
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *GetAccountInfoResponse
-		wantErr bool
-	}{}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tt.fields.jsonRPCClient.T = t
-			j := &JSONRPCConnection{
-				jsonRPCClient: tt.fields.jsonRPCClient,
-				config:        tt.fields.config,
-			}
-			got, err := j.GetAccountInfo(tt.args.ctx, tt.args.request)
 			require.Equalf(t, tt.wantErr, err != nil, "error is nil")
 			require.Equalf(t, tt.want, got, "got neq to want")
 		})

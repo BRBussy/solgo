@@ -5,14 +5,6 @@ import "encoding/json"
 // AccountEncoding specifies encoding for AccountInfo.Data
 type AccountEncoding string
 
-type EncodingConfig struct {
-	Encoding AccountEncoding `json:"encoding"`
-}
-
-func (e EncodingConfig) IsBlank() bool {
-	return e == EncodingConfig{}
-}
-
 var (
 	// Base58AccountEncoding encodes the AccountInfo.Data field in base58 (is slower!)
 	// With this encoding set account data must be < 129 bytes.
