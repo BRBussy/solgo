@@ -12,6 +12,11 @@ type Transaction struct {
 	instructions []Instruction
 }
 
+// NewTransaction creates a new Transaction
+func NewTransaction() *Transaction {
+	return &Transaction{instructions: make([]Instruction, 0)}
+}
+
 // AddInstructions adds the given instructions to the transaction.
 // An error will be returned if Signed is set.
 func (t *Transaction) AddInstructions(i ...Instruction) (*Transaction, error) {
