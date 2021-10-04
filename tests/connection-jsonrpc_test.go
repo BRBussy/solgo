@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	solana "github.com/BRBussy/solgo"
+	"github.com/BRBussy/solgo/systemProgram"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -70,13 +71,13 @@ func (suite *JSONRPCConnectionTestSuite) TestSendTransaction() {
 	newAccKP := solana.MustNewRandomKeypair()
 
 	// get instruction for adding a new account
-	createAccountInstructions, err := solana.SystemProgram.CreateAccount(
-		solana.CreateAccountParams{
+	createAccountInstructions, err := systemProgram.SystemProgram.CreateAccount(
+		systemProgram.CreateAccountParams{
 			FromPubkey:       fromKP.PublicKey,
 			NewAccountPubkey: newAccKP.PublicKey,
 			Lamports:         10000,
 			Space:            0,
-			ProgramID:        solana.SystemProgram,
+			ProgramID:        systemProgram.SystemProgram,
 		},
 	)
 
