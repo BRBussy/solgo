@@ -17,7 +17,7 @@ type Transaction struct {
 func (t *Transaction) AddInstructions(i ...Instruction) (*Transaction, error) {
 	// check if transaction has been signed
 	if t.Signed {
-		return nil, fmt.Errorf("cannot add instruction: %w", ErrTransactionAlreadySigned)
+		return nil, fmt.Errorf("cannot add instructions to signed transaction: %w", ErrTransactionAlreadySigned)
 	}
 
 	// instructions if not
