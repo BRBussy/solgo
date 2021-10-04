@@ -71,7 +71,7 @@ func (suite *JSONRPCConnectionTestSuite) TestSendTransaction() {
 	newAccKP := solana.MustNewRandomKeypair()
 
 	// get instruction for adding a new account
-	createAccountInstructions, err := systemProgram.SystemProgram.CreateAccount(
+	createAccountInstructions, err := systemProgram(
 		systemProgram.CreateAccountParams{
 			FromPubkey:       fromKP.PublicKey,
 			NewAccountPubkey: newAccKP.PublicKey,

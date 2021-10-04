@@ -7,17 +7,6 @@ import (
 	"github.com/BRBussy/solgo"
 )
 
-// SystemProgram is set on module initialisation and can be used to
-// construct SystemProgram instructions.
-var SystemProgram *systemProgram
-
-// SystemProgram is the api for the Solana system program.
-// See instruction definitions here:
-// https://github.com/solana-labs/solana/blob/4b2fe9b20d4c895f4d3cb58c2918c72a5b0a5b64/sdk/program/src/system_instruction.rs#L142
-type systemProgram struct {
-	programID solana.PublicKey
-}
-
 type CreateAccountParams struct {
 	// FromPubkey is the account that will transfer the required Lamports
 	// to cover the required Space to the new account
@@ -48,7 +37,7 @@ type createAccountInstructionData struct {
 }
 
 // CreateAccount creates a Solana system program Instruction
-func (s *systemProgram) CreateAccount(params CreateAccountParams) (*solana.Instruction, error) {
+func CreateAccount(params CreateAccountParams) (*solana.Instruction, error) {
 	// encode instruction data
 	buf := new(bytes.Buffer)
 	if err := binary.Write(
@@ -81,7 +70,7 @@ func (s *systemProgram) CreateAccount(params CreateAccountParams) (*solana.Instr
 			// those that require write access
 			// those that require read-only access
 		},
-		ProgramIDPubKey: s.programID,
+		ProgramIDPubKey: ID,
 		Data:            buf.Bytes(),
 	}, nil
 }
