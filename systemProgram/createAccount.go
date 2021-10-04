@@ -18,23 +18,6 @@ type systemProgram struct {
 	programID solana.PublicKey
 }
 
-type SystemProgramInstruction uint32
-
-const (
-	CreateAccountSystemProgramInstruction SystemProgramInstruction = iota
-	AssignSystemProgramInstruction
-	TransferSystemProgramInstruction
-	CreateAccountWithSeedSystemProgramInstruction
-	AdvanceNonceAccountSystemProgramInstruction
-	WithdrawNonceAccountSystemProgramInstruction
-	InitializeNonceAccountSystemProgramInstruction
-	AuthorizeNonceAccountSystemProgramInstruction
-	AllocateSystemProgramInstruction
-	AllocateWithSeedSystemProgramInstruction
-	AssignWithSeedSystemProgramInstruction
-	TransferWithSeedSystemProgramInstruction
-)
-
 type CreateAccountParams struct {
 	// FromPubkey is the account that will transfer the required Lamports
 	// to cover the required Space to the new account
@@ -58,12 +41,13 @@ type CreateAccountParams struct {
 }
 
 type createAccountInstructionData struct {
-	Instruction SystemProgramInstruction
+	Instruction Instruction
 	Lamports    uint64
 	Space       uint64
 	Owner       solana.PublicKey
 }
 
+// CreateAccount creates a Solana system program Instruction
 func (s *systemProgram) CreateAccount(params CreateAccountParams) (*solana.Instruction, error) {
 	// encode instruction data
 	buf := new(bytes.Buffer)
@@ -71,7 +55,7 @@ func (s *systemProgram) CreateAccount(params CreateAccountParams) (*solana.Instr
 		buf,
 		binary.LittleEndian,
 		createAccountInstructionData{
-			Instruction: CreateAccountSystemProgramInstruction,
+			Instruction: CreateAccountInstruction,
 			Lamports:    params.Lamports,
 			Space:       params.Space,
 			Owner:       params.ProgramID,
