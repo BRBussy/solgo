@@ -1,8 +1,14 @@
 package solana
 
+import (
+	"bytes"
+	"encoding/binary"
+	"fmt"
+)
+
 func init() {
 	SystemProgram = &systemProgram{
-		programID: NewPublicKeyFromBase58String(""),
+		programID: NewPublicKeyFromBase58String("11111111111111111111111111111111"),
 	}
 }
 
@@ -16,6 +22,23 @@ var SystemProgram *systemProgram
 type systemProgram struct {
 	programID PublicKey
 }
+
+type SystemProgramInstruction uint32
+
+const (
+	CreateAccountSystemProgramInstruction SystemProgramInstruction = iota
+	AssignSystemProgramInstruction
+	TransferSystemProgramInstruction
+	CreateAccountWithSeedSystemProgramInstruction
+	AdvanceNonceAccountSystemProgramInstruction
+	WithdrawNonceAccountSystemProgramInstruction
+	InitializeNonceAccountSystemProgramInstruction
+	AuthorizeNonceAccountSystemProgramInstruction
+	AllocateSystemProgramInstruction
+	AllocateWithSeedSystemProgramInstruction
+	AssignWithSeedSystemProgramInstruction
+	TransferWithSeedSystemProgramInstruction
+)
 
 type CreateAccountParams struct {
 	// FromPubkey is the account that will transfer the required Lamports
@@ -39,6 +62,47 @@ type CreateAccountParams struct {
 	ProgramID PublicKey
 }
 
+type createAccountInstructionData struct {
+	Instruction SystemProgramInstruction
+	Lamports    uint64
+	Space       uint64
+	Owner       PublicKey
+}
+
 func (s *systemProgram) CreateAccount(params CreateAccountParams) (*Instruction, error) {
-	return &Instruction{}, nil
+	// encode instruction data
+	buf := new(bytes.Buffer)
+	if err := binary.Write(
+		buf,
+		binary.LittleEndian,
+		createAccountInstructionData{
+			Instruction: CreateAccountSystemProgramInstruction,
+			Lamports:    params.Lamports,
+			Space:       params.Space,
+			Owner:       params.ProgramID,
+		},
+	); err != nil {
+		return nil, fmt.Errorf("error encoding create account data: %w", err)
+	}
+
+	// construct and return instruction
+	return &Instruction{
+		InstructionAccountMeta: []InstructionAccountMeta{
+			// 1st
+			// Addresses requiring signatures are 1st, and in the following order:
+			//
+			// those that require write access
+			{PubKey: params.FromPubkey, IsSigner: true, IsWritable: true},
+			{PubKey: params.NewAccountPubkey, IsSigner: true, IsWritable: true},
+			// those that require read-only access
+
+			// 2nd
+			// Addresses not requiring signatures are 2nd, and in the following order:
+			//
+			// those that require write access
+			// those that require read-only access
+		},
+		ProgramIDPubKey: s.programID,
+		Data:            buf.Bytes(),
+	}, nil
 }
