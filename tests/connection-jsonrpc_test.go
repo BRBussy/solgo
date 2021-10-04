@@ -70,17 +70,23 @@ func (suite *JSONRPCConnectionTestSuite) TestSendTransaction() {
 	// create key pair for the new account
 	newAccKP := solana.MustNewRandomKeypair()
 
-	// get instruction for adding a new account
-	createAccountInstructions, err := systemProgram(
+	// create a transaction
+	tx := solana.NewTransaction()
+
+	// build & add required operations
+	createAccInstructions, err := systemProgram.CreateAccount(
 		systemProgram.CreateAccountParams{
 			FromPubkey:       fromKP.PublicKey,
 			NewAccountPubkey: newAccKP.PublicKey,
 			Lamports:         10000,
 			Space:            0,
-			ProgramID:        systemProgram.SystemProgram,
+			ProgramID:        systemProgram.ID,
 		},
 	)
+	suite.Require().Nilf(err, "error calling systemProgram.CreateAccount")
+	suite.Require().Nil(
+		tx.AddInstructions(createAccInstructions...),
+		"error calling AddInstructions",
+	)
 
-	// create a transaction
-	tx := solana.NewTransaction()
 }

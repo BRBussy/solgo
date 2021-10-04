@@ -37,7 +37,7 @@ type createAccountInstructionData struct {
 }
 
 // CreateAccount creates a Solana system program Instruction
-func CreateAccount(params CreateAccountParams) (*solana.Instruction, error) {
+func CreateAccount(params CreateAccountParams) ([]solana.Instruction, error) {
 	// encode instruction data
 	buf := new(bytes.Buffer)
 	if err := binary.Write(
@@ -54,23 +54,25 @@ func CreateAccount(params CreateAccountParams) (*solana.Instruction, error) {
 	}
 
 	// construct and return instruction
-	return &solana.Instruction{
-		InstructionAccountMeta: []solana.InstructionAccountMeta{
-			// 1st
-			// Addresses requiring signatures are 1st, and in the following order:
-			//
-			// those that require write access
-			{PubKey: params.FromPubkey, IsSigner: true, IsWritable: true},
-			{PubKey: params.NewAccountPubkey, IsSigner: true, IsWritable: true},
-			// those that require read-only access
+	return []solana.Instruction{
+		{
+			InstructionAccountMeta: []solana.InstructionAccountMeta{
+				// 1st
+				// Addresses requiring signatures are 1st, and in the following order:
+				//
+				// those that require write access
+				{PubKey: params.FromPubkey, IsSigner: true, IsWritable: true},
+				{PubKey: params.NewAccountPubkey, IsSigner: true, IsWritable: true},
+				// those that require read-only access
 
-			// 2nd
-			// Addresses not requiring signatures are 2nd, and in the following order:
-			//
-			// those that require write access
-			// those that require read-only access
+				// 2nd
+				// Addresses not requiring signatures are 2nd, and in the following order:
+				//
+				// those that require write access
+				// those that require read-only access
+			},
+			ProgramIDPubKey: ID,
+			Data:            buf.Bytes(),
 		},
-		ProgramIDPubKey: ID,
-		Data:            buf.Bytes(),
 	}, nil
 }

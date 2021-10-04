@@ -19,10 +19,10 @@ func NewTransaction() *Transaction {
 
 // AddInstructions adds the given instructions to the transaction.
 // An error will be returned if Signed is set.
-func (t *Transaction) AddInstructions(i ...Instruction) (*Transaction, error) {
+func (t *Transaction) AddInstructions(i ...Instruction) error {
 	// check if transaction has been signed
 	if t.Signed {
-		return nil, fmt.Errorf("cannot add instructions to signed transaction: %w", ErrTransactionAlreadySigned)
+		return fmt.Errorf("cannot add instructions to signed transaction: %w", ErrTransactionAlreadySigned)
 	}
 
 	// instructions if not
@@ -31,17 +31,7 @@ func (t *Transaction) AddInstructions(i ...Instruction) (*Transaction, error) {
 		i...,
 	)
 
-	// and return the transaction
-	return t, nil
-}
-
-// MustAddInstructions calls AddInstructions with the given instructions.
-// Panics if AddInstructions returns an error - e.g. if Signed is set.
-func (t *Transaction) MustAddInstructions(i ...Instruction) *Transaction {
-	if _, err := t.AddInstructions(i...); err != nil {
-		panic(err)
-	}
-	return t
+	return nil
 }
 
 func (t *Transaction) ToBase58() (string, error) {
