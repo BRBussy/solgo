@@ -1,14 +1,9 @@
 package solana
 
-import "fmt"
-
 // Transaction is a Solana blockchain transaction.
 // Learn more at: https://docs.solana.com/developing/programming-model/transactions
 type Transaction struct {
-	// Signed indicates that the transaction has been signed
-	// at least once.
-	Signed bool
-
+	signatures   []string
 	instructions []Instruction
 }
 
@@ -20,17 +15,17 @@ func NewTransaction() *Transaction {
 // AddInstructions adds the given instructions to the transaction.
 // An error will be returned if Signed is set.
 func (t *Transaction) AddInstructions(i ...Instruction) error {
-	// check if transaction has been signed
-	if t.Signed {
-		return fmt.Errorf("cannot add instructions to signed transaction: %w", ErrTransactionAlreadySigned)
-	}
-
 	// instructions if not
 	t.instructions = append(
 		t.instructions,
 		i...,
 	)
+	return nil
+}
 
+// Sign signs the Transaction with given PrivateKey(s) and appends
+// a signature to a list of signatures held on the Transaction.
+func (t *Transaction) Sign(pvtKeys ...PrivateKey) error {
 	return nil
 }
 
