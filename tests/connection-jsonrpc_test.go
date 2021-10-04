@@ -60,3 +60,26 @@ func (suite *JSONRPCConnectionTestSuite) TestGetBalance() {
 
 	fmt.Println("getBalanceResponsegetBalanceResponsegetBalanceResponse", getBalanceResponse.Value)
 }
+
+func (suite *JSONRPCConnectionTestSuite) TestSendTransaction() {
+	// create key pair for the account that will pay the opening Lamports for
+	// the account that is going to be created
+	fromKP := solana.MustNewRandomKeypair()
+
+	// create key pair for the new account
+	newAccKP := solana.MustNewRandomKeypair()
+
+	// get instruction for adding a new account
+	createAccountInstructions, err := solana.SystemProgram.CreateAccount(
+		solana.CreateAccountParams{
+			FromPubkey:       fromKP.PublicKey,
+			NewAccountPubkey: newAccKP.PublicKey,
+			Lamports:         10000,
+			Space:            0,
+			ProgramID:        solana.SystemProgram,
+		},
+	)
+
+	// create a transaction
+	tx := solana.NewTransaction()
+}
