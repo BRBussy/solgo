@@ -17,6 +17,10 @@ func NewTransaction() *Transaction {
 // AddInstructions adds the given instructions to the transaction.
 // An error will be returned if Signed is set.
 func (t *Transaction) AddInstructions(i ...Instruction) error {
+	if len(t.signatures) > 0 {
+		return ErrTransactionAlreadySigned
+	}
+
 	// instructions if not
 	t.instructions = append(
 		t.instructions,
