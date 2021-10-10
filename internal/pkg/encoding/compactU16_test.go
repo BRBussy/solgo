@@ -1,7 +1,7 @@
 package encoding
 
 import (
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -11,18 +11,13 @@ func TestIntToCompactU16(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := IntToCompactU16()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("IntToCompactU16() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("IntToCompactU16() got = %v, want %v", got, tt.want)
-			}
+			assert.Equalf(t, tt.wantErr, err != nil, "error response not as expected")
+			assert.Equalf(t, tt.want, got, "result not as expected")
 		})
 	}
 }
