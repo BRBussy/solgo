@@ -1,12 +1,14 @@
 package solana
 
+import "github.com/BRBussy/solgo/internal/pkg/encoding"
+
 // Transaction is a Solana blockchain transaction.
 // Learn more at: https://docs.solana.com/developing/programming-model/transactions
 type Transaction struct {
 	// signatures is a list of digital signatures.
 	// Each digital signature is in the ed25519 binary format and consumes 64 bytes.
-	signatures   []string
-	instructions []Instruction
+	signatures   []encoding.CompactArray // of Signatures
+	instructions []Instruction           // of Instructions
 }
 
 // NewTransaction creates a new Transaction

@@ -1,7 +1,7 @@
 package solana
 
 // AccountInfoEncodedData is information describing an account
-// with data field encoded accorded to a prescribed Encoding
+// with data field encoded according to a prescribed Encoding
 type AccountInfoEncodedData struct {
 	// Executable is true if this account's Data contains a loaded program
 	Executable bool `json:"executable"`
