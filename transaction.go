@@ -5,7 +5,10 @@ package solana
 type Transaction struct {
 	// signatures is a list of digital signatures.
 	// Each Digital Signature is in the ed25519 binary format and consumes 64 bytes.
-	signatures   Signatures   // of Signatures
+	signatures Signatures // of Signatures
+
+	// instructions is a list of Instructions.
+	// Each Digital Signature is in the ed25519 binary format and consumes 64 bytes.
 	instructions Instructions // of Instructions
 }
 
