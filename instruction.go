@@ -1,5 +1,9 @@
 package solana
 
+import (
+	"github.com/BRBussy/solgo/internal/pkg/encoding"
+)
+
 // InstructionAccountMeta describes one of the accounts that will be provided
 // as input to the program that is going to process an Instruction.
 type InstructionAccountMeta struct {
@@ -27,4 +31,13 @@ type Instruction struct {
 
 	// Data is the data to be input to the Program
 	Data []byte
+}
+
+// Instructions is a list of Instruction entries.
+// It implements the encoding.Compactor interface so that
+// it can be converted into an encoding.CompactArray of signatures.
+type Instructions []Instruction
+
+func (i Instructions) Compact() (encoding.CompactArray, error) {
+	panic("implement me")
 }

@@ -4,18 +4,18 @@ package solana
 // Learn more at: https://docs.solana.com/developing/programming-model/transactions
 type Transaction struct {
 	// signatures is a list of digital signatures.
-	// Each digital signature is in the ed25519 binary format and consumes 64 bytes.
-	signatures   []Signature   // of Signatures
-	instructions []Instruction // of Instructions
+	// Each Digital Signature is in the ed25519 binary format and consumes 64 bytes.
+	signatures   Signatures   // of Signatures
+	instructions Instructions // of Instructions
 }
 
 // NewTransaction creates a new Transaction
 func NewTransaction() *Transaction {
-	return &Transaction{instructions: make([]Instruction, 0)}
+	return &Transaction{instructions: make(Instructions, 0)}
 }
 
 // AddInstructions adds the given instructions to the transaction.
-// An error will be returned if Signed is set.
+// An error will be returned if the Transaction contains Signatures.
 func (t *Transaction) AddInstructions(i ...Instruction) error {
 	if len(t.signatures) > 0 {
 		return ErrTransactionAlreadySigned
