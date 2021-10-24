@@ -5,7 +5,7 @@ import "encoding/binary"
 // Compactor is the interface implemented by types that
 // can Compact themselves into a CompactArray
 type Compactor interface {
-	Compact() (CompactArray, error)
+	Compact() CompactArray
 }
 
 // CompactArray models the data structure described here:

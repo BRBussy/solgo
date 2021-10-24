@@ -18,7 +18,7 @@ func (s Signature) Bytes() []byte {
 type Signatures []Signature
 
 // Compact Signatures into an encoding.CompactArray
-func (s Signatures) Compact() (encoding.CompactArray, error) {
+func (s Signatures) Compact() encoding.CompactArray {
 	// prepare slice of data to return
 	data := make([]byte, 0)
 
@@ -31,5 +31,5 @@ func (s Signatures) Compact() (encoding.CompactArray, error) {
 	return encoding.CompactArray{
 		Length: uint64(len(s)),
 		Data:   data,
-	}, nil
+	}
 }

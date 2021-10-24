@@ -89,4 +89,8 @@ func (suite *JSONRPCConnectionTestSuite) TestSendTransaction() {
 		"error calling AddInstructions",
 	)
 
+	base64, err := tx.ToBase58()
+	suite.Require().Nilf(err, "error marshalling transaction")
+
+	fmt.Println(base64)
 }

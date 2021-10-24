@@ -38,7 +38,35 @@ func (t *Transaction) Sign(pvtKeys ...PrivateKey) error {
 	return nil
 }
 
-func (t *Transaction) ToBase58() (string, error) {
+func (t *Transaction) ToBase58(recentBlockHash [32]byte) (string, error) {
+	messageAccountAddresses := []byte{}
+
+	// prepare compiled transaction
+	compiledTxn := make([]byte, 0)
+	for _, s := range [][]byte{
+		// [1.] Compact array of signatures
+		t.signatures.Compact().Data,
+
+		// [2.] Message
+		// [2.1] Header
+		{
+			// no. of required signatures in the contained transaction
+			0x00,
+			// no. of 'signed for' accounts that are read only
+			0x00,
+			// no. of read-only account addresses not requiring signatures
+			0x00,
+		},
+		// [2.2] Account addresses
+		messageAccountAddresses,
+		// [2.3] Recent blockhash
+		recentBlockHash[:],
+		// [2.4] compact array of instructions
+		t.instructions.Compact().Data,
+	} {
+		compiledTxn = append(compiledTxn, s...)
+	}
+
 	return "", nil
 }
 

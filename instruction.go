@@ -38,6 +38,6 @@ type Instruction struct {
 // it can be converted into an encoding.CompactArray of signatures.
 type Instructions []Instruction
 
-func (i Instructions) Compact() (encoding.CompactArray, error) {
+func (i Instructions) Compact() encoding.CompactArray {
 	panic("implement me")
 }
