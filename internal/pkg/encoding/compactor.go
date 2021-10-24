@@ -9,7 +9,8 @@ type Compactor interface {
 }
 
 // CompactArray models the data structure described here:
-// A compact-array is serialized as the array length, followed by each array item, i.e.:
+// A compact-array is serialized as the array length, followed by each array item.
+// Solana requires that the length be variant encoded over 3 bytes - i.e.:
 // [ArrLenByte1, ArrLenByte2, ArrLenByte3, arrayContentsN, arrayContentsN+1,...]
 // Source: https://docs.solana.com/developing/programming-model/transactions#compact-array-format
 type CompactArray struct {
@@ -21,7 +22,7 @@ type CompactArray struct {
 func (c CompactArray) ToBytes() []byte {
 	// multi-byte variant encode the number of items in the array
 	encodedArrayLength := make([]byte, binary.MaxVarintLen16)
-	binary.PutVarint(encodedArrayLength, int64(c.Length))
+	binary.PutUvarint(encodedArrayLength, c.Length)
 
 	// and return the compact array as bytes
 	return append(
