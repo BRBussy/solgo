@@ -20,7 +20,7 @@ type Signatures []Signature
 // Compact Signatures into an encoding.CompactArray
 func (s Signatures) Compact() (encoding.CompactArray, error) {
 	// prepare slice of data to return
-	data := make([]byte, len(s))
+	data := make([]byte, 0)
 
 	// pack all signatures into the data slice
 	for i := range s {
