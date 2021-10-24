@@ -18,22 +18,44 @@ func TestCompactArray_ToBytes(t *testing.T) {
 		{
 			name: "success - length 127",
 			fields: fields{
-				Length: 127,
-				Data:   []byte{0x01, 0x02},
-			},
-			want: []byte{
-				0b01111111, 0x00, 0x00,
-				0x01, 0x02,
-			},
-		},
-		{
-			name: "success - length 300",
-			fields: fields{
-				Length: 127,
+				Length: 0x7f,
 				Data:   []byte{0x01, 0x02},
 			},
 			want: []byte{
 				0x7f, 0x00, 0x00,
+				0x01, 0x02,
+			},
+		},
+		{
+			name: "success - length 254",
+			fields: fields{
+				Length: 0b11111110,
+				Data:   []byte{0x01, 0x02},
+			},
+			want: []byte{
+				0b11111110, 0x01, 0x00,
+				0x01, 0x02,
+			},
+		},
+		{
+			name: "success - length 255",
+			fields: fields{
+				Length: 0b11111111,
+				Data:   []byte{0x01, 0x02},
+			},
+			want: []byte{
+				0b11111111, 0x01, 0x00,
+				0x01, 0x02,
+			},
+		},
+		{
+			name: "success - length 256",
+			fields: fields{
+				Length: 256,
+				Data:   []byte{0x01, 0x02},
+			},
+			want: []byte{
+				0b10000000, 0x02, 0x00,
 				0x01, 0x02,
 			},
 		},
