@@ -215,7 +215,7 @@ func (j *JSONRPCConnection) SendTransaction(ctx context.Context, request SendTra
 		fallthrough
 	default:
 		config["encoding"] = Base58Encoding
-		txnData, err = request.Transaction.ToBase58()
+		txnData, err = request.Transaction.ToBase58([32]byte{})
 		if err != nil {
 			return nil, fmt.Errorf("error marshalling to base58: %w", err)
 		}
