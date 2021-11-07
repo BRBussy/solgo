@@ -199,7 +199,12 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 
 type getRecentBlockHashJSONRPCResponse struct {
 	Context Context `json:"context"`
-	Value   uint64  `json:"value"`
+	Value   struct {
+		BlockHash     string `json:"blockhash"`
+		FeeCalculator struct {
+			LamportsPerSignature int64 `json:"lamportsPerSignature"`
+		} `json:"feeCalculator"`
+	}
 }
 
 func (j *JSONRPCConnection) GetRecentBlockHash(ctx context.Context, request GetRecentBlockHashRequest) (*GetRecentBlockHashResponse, error) {
@@ -235,9 +240,12 @@ func (j *JSONRPCConnection) GetRecentBlockHash(ctx context.Context, request GetR
 	}
 
 	return &GetRecentBlockHashResponse{
-		Context:       response.Context,
-		BlockHash:     "",
-		FeeCalculator: "",
+		Context:   response.Context,
+		BlockHash: response.Value.BlockHash,
+		FeeCalculator: FeeCalculator{
+			blockHash:            response.Value.BlockHash,
+			lamportsPerSignature: response.Value.FeeCalculator.LamportsPerSignature,
+		},
 	}, nil
 }
 
