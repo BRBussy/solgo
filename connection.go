@@ -13,12 +13,12 @@ type Connection interface {
 	// GetBalance returns the balance of the account of provided PublicKey
 	GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error)
 
-	// GetRecentBlockHash returns a recent block hash from the ledger, and a fee schedule that
-	// can be used to compute the cost of submitting a transaction using it.
+	// GetRecentBlockHash returns a recent block hash from the ledger, and a FeeCalculator that
+	// can be used to calculate the cost of submitting a Transaction.
 	GetRecentBlockHash(ctx context.Context, request GetRecentBlockHashRequest) (*GetRecentBlockHashResponse, error)
 
 	// SendTransaction submits a signed transaction to the cluster for processing.
-	// This method does not alter the transaction in any way; it relays the
+	// This method does not alter the transaction in any way, it relays the
 	// transaction created by clients to the node as-is.
 	SendTransaction(ctx context.Context, request SendTransactionRequest) (*SendTransactionResponse, error)
 }
