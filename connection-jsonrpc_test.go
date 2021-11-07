@@ -418,7 +418,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 		Value: 100,
 	}
 	successfulResponseJSONResult, err := json.Marshal(
-		GetBalanceJSONRPCResponse{
+		getBalanceJSONRPCResponse{
 			Context: successfulResponse.Context,
 			Value:   successfulResponse.Value,
 		},
@@ -511,7 +511,7 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error parsing GetBalanceJSONRPCResponse",
+			name: "error parsing getBalanceJSONRPCResponse",
 			fields: fields{
 				jsonRPCClient: &jsonrpc.MockClient{
 					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {

@@ -6,6 +6,9 @@ import (
 	"github.com/BRBussy/solgo/internal/pkg/jsonrpc"
 )
 
+// ensure JSONRPCConnection implements Connection
+var _ Connection = &JSONRPCConnection{}
+
 // JSONRPCConnection is a json-rpc http implementation of the solana.Connection interface
 type JSONRPCConnection struct {
 	jsonRPCClient jsonrpc.Client
@@ -129,7 +132,7 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 			},
 		)
 		if err := rpcResponse.GetObject(r); err != nil {
-			return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+			return nil, fmt.Errorf("error parsing getBalanceJSONRPCResponse: %w", err)
 		}
 		response.Context = r.Context
 		response.AccountInfo = r.Value
@@ -142,7 +145,7 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 			},
 		)
 		if err := rpcResponse.GetObject(r); err != nil {
-			return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+			return nil, fmt.Errorf("error parsing getBalanceJSONRPCResponse: %w", err)
 		}
 		response.Context = r.Context
 		response.AccountInfo = r.Value
@@ -151,7 +154,7 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 	return &response, nil
 }
 
-type GetBalanceJSONRPCResponse struct {
+type getBalanceJSONRPCResponse struct {
 	Context Context `json:"context"`
 	Value   uint64  `json:"value"`
 }
@@ -183,15 +186,19 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 	}
 
 	// parse response
-	response := new(GetBalanceJSONRPCResponse)
+	response := new(getBalanceJSONRPCResponse)
 	if err := rpcResponse.GetObject(response); err != nil {
-		return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+		return nil, fmt.Errorf("error parsing getBalanceJSONRPCResponse: %w", err)
 	}
 
 	return &GetBalanceResponse{
 		Context: response.Context,
 		Value:   response.Value,
 	}, nil
+}
+
+func (j *JSONRPCConnection) GetRecentBlockHash(ctx context.Context, request GetRecentBlockHashRequest) (*GetRecentBlockHashResponse, error) {
+	panic("implement me")
 }
 
 func (j *JSONRPCConnection) SendTransaction(ctx context.Context, request SendTransactionRequest) (*SendTransactionResponse, error) {
@@ -249,7 +256,7 @@ func (j *JSONRPCConnection) SendTransaction(ctx context.Context, request SendTra
 	// parse response
 	response := new(string)
 	if err := rpcResponse.GetObject(response); err != nil {
-		return nil, fmt.Errorf("error parsing GetBalanceJSONRPCResponse: %w", err)
+		return nil, fmt.Errorf("error parsing getBalanceJSONRPCResponse: %w", err)
 	}
 
 	return &SendTransactionResponse{
