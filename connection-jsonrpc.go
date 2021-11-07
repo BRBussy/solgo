@@ -197,8 +197,48 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 	}, nil
 }
 
+type getRecentBlockHashJSONRPCResponse struct {
+	Context Context `json:"context"`
+	Value   uint64  `json:"value"`
+}
+
 func (j *JSONRPCConnection) GetRecentBlockHash(ctx context.Context, request GetRecentBlockHashRequest) (*GetRecentBlockHashResponse, error) {
-	panic("implement me")
+	// prepare configuration object
+	config := map[string]interface{}{
+		"commitment": j.Commitment(),
+	}
+
+	// set commitment level if provided
+	if request.CommitmentLevel != "" {
+		config["commitment"] = request.CommitmentLevel
+	}
+
+	// perform rpc call
+	rpcResponse, err := j.jsonRPCClient.CallParamArray(
+		ctx,
+		"getRecentBlockhash",
+		nil,
+		request.PublicKey.ToBase58(),
+		config,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error performing getRecentBlockhash json-rpc call: %w", err)
+	}
+	if rpcResponse.Error != nil {
+		return nil, fmt.Errorf("error set on rpc response: %w", rpcResponse.Error)
+	}
+
+	// parse response
+	response := new(getRecentBlockHashJSONRPCResponse)
+	if err := rpcResponse.GetObject(response); err != nil {
+		return nil, fmt.Errorf("error parsing getRecentBlockHashJSONRPCResponse: %w", err)
+	}
+
+	return &GetRecentBlockHashResponse{
+		Context:       response.Context,
+		BlockHash:     "",
+		FeeCalculator: "",
+	}, nil
 }
 
 func (j *JSONRPCConnection) SendTransaction(ctx context.Context, request SendTransactionRequest) (*SendTransactionResponse, error) {

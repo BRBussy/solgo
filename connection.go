@@ -53,8 +53,10 @@ type GetRecentBlockHashResponse struct {
 	Context Context
 	// BlockHash is a base58 encoded string
 	BlockHash string
-	// FeeCalculator is the fee schedule for this BlockHash
-	FeeCalculator string
+	// FeeCalculator can be used to calculate the fee
+	// to send a given Transaction according to the fee
+	// schedule at this BlockHash
+	FeeCalculator FeeCalculator
 }
 
 type SendTransactionRequest struct {
