@@ -13,6 +13,10 @@ type Connection interface {
 	// GetBalance returns the balance of the account of provided PublicKey
 	GetBalance(ctx context.Context, request GetBalanceRequest) (*GetBalanceResponse, error)
 
+	// GetRecentBlockHash returns a recent block hash from the ledger, and a fee schedule that
+	// can be used to compute the cost of submitting a transaction using it.
+	GetRecentBlockHash(ctx context.Context, request GetRecentBlockHashRequest) (*GetRecentBlockHashResponse, error)
+
 	// SendTransaction submits a signed transaction to the cluster for processing.
 	// This method does not alter the transaction in any way; it relays the
 	// transaction created by clients to the node as-is.
@@ -38,6 +42,19 @@ type GetBalanceRequest struct {
 type GetBalanceResponse struct {
 	Context Context
 	Value   uint64
+}
+
+type GetRecentBlockHashRequest struct {
+	PublicKey       PublicKey
+	CommitmentLevel CommitmentLevel
+}
+
+type GetRecentBlockHashResponse struct {
+	Context Context
+	// BlockHash is a base58 encoded string
+	BlockHash string
+	// FeeCalculator is the fee schedule for this BlockHash
+	FeeCalculator string
 }
 
 type SendTransactionRequest struct {
