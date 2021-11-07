@@ -8,10 +8,9 @@ import (
 
 func TestSignatures_Compact(t *testing.T) {
 	tests := []struct {
-		name    string
-		s       Signatures
-		want    encoding.CompactArray
-		wantErr bool
+		name string
+		s    Signatures
+		want encoding.CompactArray
 	}{
 		{
 			name: "compacting success",
@@ -78,14 +77,12 @@ func TestSignatures_Compact(t *testing.T) {
 					0x43, 0x46, 0x38, 0xc, 0xf2, 0xfe, 0x42, 0x25,
 				},
 			},
-			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.s.Compact()
-			require.Equalf(t, tt.want, got, "bytes not as expected")
-			require.Equalf(t, tt.wantErr, err != nil, "bytes not as expected")
+			got := tt.s.Compact()
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

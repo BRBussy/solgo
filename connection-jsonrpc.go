@@ -118,7 +118,7 @@ func (j *JSONRPCConnection) GetAccountInfo(ctx context.Context, request GetAccou
 		return nil, fmt.Errorf("error performing getAccountInfo json-rpc call: %w", err)
 	}
 	if rpcResponse.Error != nil {
-		return nil, fmt.Errorf("error set on rpc response: %s", rpcResponse.Error.Error())
+		return nil, fmt.Errorf("error set on rpc response: %w", rpcResponse.Error)
 	}
 
 	// parse response by type
@@ -182,7 +182,7 @@ func (j *JSONRPCConnection) GetBalance(ctx context.Context, request GetBalanceRe
 		return nil, fmt.Errorf("error performing getBalance json-rpc call: %w", err)
 	}
 	if rpcResponse.Error != nil {
-		return nil, fmt.Errorf("error set on rpc response: %s", rpcResponse.Error.Error())
+		return nil, fmt.Errorf("error set on rpc response: %w", rpcResponse.Error)
 	}
 
 	// parse response
