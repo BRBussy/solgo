@@ -45,7 +45,6 @@ type GetBalanceResponse struct {
 }
 
 type GetRecentBlockHashRequest struct {
-	PublicKey       PublicKey
 	CommitmentLevel CommitmentLevel
 }
 

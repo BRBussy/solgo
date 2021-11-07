@@ -223,7 +223,6 @@ func (j *JSONRPCConnection) GetRecentBlockHash(ctx context.Context, request GetR
 		ctx,
 		"getRecentBlockhash",
 		nil,
-		request.PublicKey.ToBase58(),
 		config,
 	)
 	if err != nil {

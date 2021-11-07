@@ -576,3 +576,179 @@ func TestJSONRPCConnection_GetBalance(t *testing.T) {
 		})
 	}
 }
+
+func TestJSONRPCConnection_GetRecentBlockHash(t *testing.T) {
+	successfulResponse := GetRecentBlockHashResponse{
+		Context: Context{
+			Slot: 123412356234,
+		},
+		BlockHash: "CSymwgTNX1j3E4qhKfJAUE41nBWEwXufoYryPbkde5RR",
+		FeeCalculator: FeeCalculator{
+			blockHash:            "CSymwgTNX1j3E4qhKfJAUE41nBWEwXufoYryPbkde5RR",
+			lamportsPerSignature: 5000,
+		},
+	}
+	successfulResponseJSONResult, err := json.Marshal(
+		getRecentBlockHashJSONRPCResponse{
+			Context: successfulResponse.Context,
+			Value: struct {
+				BlockHash     string `json:"blockhash"`
+				FeeCalculator struct {
+					LamportsPerSignature int64 `json:"lamportsPerSignature"`
+				} `json:"feeCalculator"`
+			}{
+				BlockHash: "CSymwgTNX1j3E4qhKfJAUE41nBWEwXufoYryPbkde5RR",
+				FeeCalculator: struct {
+					LamportsPerSignature int64 `json:"lamportsPerSignature"`
+				}{
+					LamportsPerSignature: 5000,
+				},
+			},
+		},
+	)
+	require.Nil(t, err)
+
+	type fields struct {
+		jsonRPCClient jsonrpc.Client
+		config        *jsonrpcConnectionConfig
+	}
+	type args struct {
+		ctx     context.Context
+		request GetRecentBlockHashRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *GetRecentBlockHashResponse
+		wantErr bool
+	}{
+		{
+			name: "error performing json rpc call - commitment config not provided",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						require.Equalf(t, "getRecentBlockhash", method, "method not as expected")
+						require.Equalf(
+							t,
+							[]interface{}{
+								map[string]interface{}{
+									"commitment": MaxCommitmentLevel,
+								},
+							},
+							params,
+							"params not as expected",
+						)
+
+						return nil, errors.New("some err")
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: MaxCommitmentLevel,
+				},
+			},
+			args: args{
+				ctx:     context.Background(),
+				request: GetRecentBlockHashRequest{},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "error set on rpc response - commitment config provided",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						require.Equalf(
+							t,
+							[]interface{}{
+								map[string]interface{}{
+									"commitment": ProcessedCommitmentLevel,
+								},
+							},
+							params,
+							"params not as expected",
+						)
+
+						return &jsonrpc.RPCResponse{
+							Error: &jsonrpc.RPCError{Message: "bad things happened"},
+						}, nil
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: MaxCommitmentLevel,
+				},
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetRecentBlockHashRequest{
+					CommitmentLevel: ProcessedCommitmentLevel,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "error parsing getBalanceJSONRPCResponse",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: []byte("invalid data here"),
+							Error:  nil,
+						}, nil
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: MaxCommitmentLevel,
+				},
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetRecentBlockHashRequest{
+					CommitmentLevel: FinalizedCommitmentLevel,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "success",
+			fields: fields{
+				jsonRPCClient: &jsonrpc.MockClient{
+					CallParamArrayFunc: func(t *testing.T, m *jsonrpc.MockClient, ctx context.Context, method string, additionalHeaders map[string]string, params ...interface{}) (*jsonrpc.RPCResponse, error) {
+						return &jsonrpc.RPCResponse{
+							Result: successfulResponseJSONResult,
+							Error:  nil,
+						}, nil
+					},
+				},
+				config: &jsonrpcConnectionConfig{
+					commitmentLevel: MaxCommitmentLevel,
+				},
+			},
+			args: args{
+				ctx: context.Background(),
+				request: GetRecentBlockHashRequest{
+					CommitmentLevel: MaxCommitmentLevel,
+				},
+			},
+			want:    &successfulResponse,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if mock, ok := tt.fields.jsonRPCClient.(*jsonrpc.MockClient); ok {
+				mock.T = t
+			}
+			j := &JSONRPCConnection{
+				jsonRPCClient: tt.fields.jsonRPCClient,
+				config:        tt.fields.config,
+			}
+			got, err := j.GetRecentBlockHash(tt.args.ctx, tt.args.request)
+			require.Equal(t, tt.wantErr, err != nil)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
