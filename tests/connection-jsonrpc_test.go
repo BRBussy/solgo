@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	solana "github.com/BRBussy/solgo"
 	"github.com/BRBussy/solgo/systemProgram"
 	"github.com/stretchr/testify/suite"
@@ -34,8 +33,8 @@ func (suite *JSONRPCConnectionTestSuite) TestGetAccountInfo() {
 			CommitmentLevel: solana.ProcessedCommitmentLevel,
 		},
 	)
-	suite.Require().Nil(err)
 	suite.Require().NotNil(getEncodedAccountInfoResponse)
+	suite.Require().Nil(err)
 
 	getJSONParsedAccountInfoResponse, err := suite.jsonrpcConnection.GetAccountInfo(
 		context.Background(),
@@ -45,8 +44,8 @@ func (suite *JSONRPCConnectionTestSuite) TestGetAccountInfo() {
 			Encoding:        solana.JSONParsedEncoding,
 		},
 	)
-	suite.Require().Nil(err)
 	suite.Require().NotNil(getJSONParsedAccountInfoResponse)
+	suite.Require().Nil(err)
 }
 
 func (suite *JSONRPCConnectionTestSuite) TestGetBalance() {
@@ -57,9 +56,19 @@ func (suite *JSONRPCConnectionTestSuite) TestGetBalance() {
 			CommitmentLevel: solana.ProcessedCommitmentLevel,
 		},
 	)
+	suite.Require().NotNil(getBalanceResponse)
 	suite.Require().Nil(err)
+}
 
-	fmt.Println("getBalanceResponsegetBalanceResponsegetBalanceResponse", getBalanceResponse.Value)
+func (suite *JSONRPCConnectionTestSuite) TestGetRecentBlockHash() {
+	getRecentBlockHashResponse, err := suite.jsonrpcConnection.GetRecentBlockHash(
+		context.Background(),
+		solana.GetRecentBlockHashRequest{
+			CommitmentLevel: solana.ProcessedCommitmentLevel,
+		},
+	)
+	suite.Require().NotNil(getRecentBlockHashResponse)
+	suite.Require().Nil(err)
 }
 
 func (suite *JSONRPCConnectionTestSuite) TestSendTransaction() {
