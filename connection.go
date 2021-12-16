@@ -4,6 +4,9 @@ import "context"
 
 // Connection represents a connection to a fullnode JSON RPC endpoint
 type Connection interface {
+	// Network returns the network with which the connection has been configured to communicate
+	Network() Network
+
 	// Commitment returns the default commitmentLevel used for requests
 	Commitment() CommitmentLevel
 

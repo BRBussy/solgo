@@ -85,6 +85,10 @@ func NewJSONRPCConnection(opts ...JSONRPCConnectionOption) *JSONRPCConnection {
 	}
 }
 
+func (j *JSONRPCConnection) Network() Network {
+	return j.config.network
+}
+
 func (j *JSONRPCConnection) Commitment() CommitmentLevel {
 	return j.config.commitmentLevel
 }
